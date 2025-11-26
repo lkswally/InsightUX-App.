@@ -50,4 +50,5 @@ if enviado:
 # Footer simple
 st.markdown("---")
 
-st.caption("InsightUX MVP - Powered by Gemini & n8n")
+st.caption("InsightUX MVP - Powered by LucasR & AntoC")
+
