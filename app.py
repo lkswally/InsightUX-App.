@@ -76,7 +76,7 @@ if enviado:
                 respuesta = requests.post(webhook_url, json=datos)
                 
                 if respuesta.status_code == 200:
-                    status.update(label="¡Análisis completado!", state="complete", expanded=False)
+                    status.update(label="¡Análisis completado!", state="complete", expanded=True)
                     
                     # --- 4. MENSAJE DE ÉXITO (CAMBIADO) ---
                     st.success("✅ ¡Listo! Revisa tu correo para ver el informe.")
@@ -103,6 +103,7 @@ st.markdown(
     """, 
     unsafe_allow_html=True
 )
+
 
 
 
