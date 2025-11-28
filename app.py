@@ -26,7 +26,7 @@ if enviado:
         st.info("⏳ Enviando datos al cerebro (n8n)...")
         
         # 1. TU URL DE N8N (La Test URL que copiaste)
-        webhook_url = "https://n8n-testi.hopto.org/webhook-test/analisis-ux"
+        webhook_url = "https://n8n-testi.hopto.org/webhook/analisis-ux"
         
         # 2. El paquete de datos a enviar (JSON)
         datos = {
@@ -51,6 +51,7 @@ if enviado:
 st.markdown("---")
 
 st.caption("InsightUX MVP - Powered by LucasR & AntoC")
+
 
 
 
