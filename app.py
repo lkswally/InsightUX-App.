@@ -78,11 +78,12 @@ if enviado:
                 if respuesta.status_code == 200:
                     status.update(label="¡Análisis completado!", state="complete", expanded=False)
                     
-                    # --- 4. MENSAJE DE ÉXITO AMIGABLE ---
-                    st.success(f"✅ ¡Listo! Hemos enviado el reporte PDF a **{email_usuario}**.")
-                    st.info("🕒 Podría tardar entre 1 y 2 minutos en llegar. Revisa tu carpeta de Spam por si acaso.")
+                    # --- 4. MENSAJE DE ÉXITO (CAMBIADO) ---
+                    st.success("✅ ¡Listo! Revisa tu correo para ver el informe.")
                     
-                    # Mostramos qué URL se analizó realmente (para confirmación visual)
+                    st.info(f"Enviado a **{email_usuario}**. Puede tardar unos minutos (revisa Spam por las dudas).")
+                    
+                    # Mostramos qué URL se analizó realmente
                     st.caption(f"🔗 URL Analizada: {url_final}")
                     
                 else:
@@ -102,7 +103,6 @@ st.markdown(
     """, 
     unsafe_allow_html=True
 )
-
 
 
 
