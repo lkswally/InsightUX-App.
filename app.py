@@ -15,8 +15,6 @@ hide_st_style = """
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
-            /* Estilo para mensajes de alerta más bonitos */
-            .stAlert { padding: 1rem; border-radius: 10px; }
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
@@ -47,16 +45,13 @@ with st.form("analisis_form"):
     
     email_usuario = st.text_input(
         "¿Dónde enviamos el reporte?", 
-        placeholder="tu@email.com"
+        placeholder="nombre@tuempresa.com"
     )
     
-    # Espacio
     st.write("")
-    
-    # Botón de envío
     enviado = st.form_submit_button("✨ Iniciar Análisis Ahora", type="primary")
 
-# --- LÓGICA DE PROCESAMIENTO ---
+# --- LÓGICA DE PROCESAMIENTO HÍBRIDA ---
 if enviado:
     if not url_input or not email_usuario:
         st.warning("⚠️ Por favor, completa todos los campos para iniciar.")
@@ -66,11 +61,9 @@ if enviado:
         if not url_final.startswith(('http://', 'https://')):
             url_final = 'https://' + url_final
             
-        # Simulación de carga (Feedback visual)
-        with st.status("⚙️ Iniciando motores de análisis...", expanded=True) as status:
-            st.write("Conectando con el servidor...")
-            time.sleep(1)
-            st.write("Validando URL...")
+        # Feedback Visual de carga
+        with st.status("⚙️ Conectando con el servidor...", expanded=True) as status:
+            st.write("Validando URL y permisos de acceso...")
             
             # URL DE PRODUCCIÓN
             webhook_url = "https://n8n-testi.hopto.org/webhook/analisis-ux"
@@ -81,32 +74,42 @@ if enviado:
             }
             
             try:
-                respuesta = requests.post(webhook_url, json=datos)
+                # Esperamos la respuesta rápida del Scraper (máx 20 segundos)
+                respuesta = requests.post(webhook_url, json=datos, timeout=20)
                 
+                # Intentamos leer el mensaje que manda n8n
+                try:
+                    mensaje_n8n = respuesta.json().get('message', 'Proceso finalizado.')
+                except:
+                    mensaje_n8n = "Respuesta del servidor recibida."
+
+                # --- ESCENARIO 1: ÉXITO (Código 200 - Camino de arriba) ---
                 if respuesta.status_code == 200:
-                    status.update(label="✅ ¡Solicitud procesada correctamente!", state="complete", expanded=True)
+                    status.update(label="✅ ¡Conexión Exitosa!", state="complete", expanded=True)
                     
-                    # --- MENSAJE PRINCIPAL ---
-                    st.success(f"""
-                    **¡El sistema ha iniciado el análisis correctamente!** 🚀
+                    st.success(f"**¡Excelente! {mensaje_n8n}**")
                     
-                    Hemos puesto en cola a **{url_final}**. Nuestro agente de IA está escaneando la web en este momento.
+                    st.markdown(f"""
+                    El agente de IA ya está trabajando en tu reporte para **{url_final}**.
+                    
+                    📬 **Te llegará al correo ({email_usuario}) en aproximadamente 2 minutos.**
+                    *(Puedes cerrar esta pestaña, el proceso continúa en la nube).*
                     """)
+                
+                # --- ESCENARIO 2: ERROR (Código 400 - Camino de abajo) ---
+                elif respuesta.status_code >= 400:
+                    status.update(label="🛑 No se pudo analizar", state="error", expanded=True)
                     
-                    # --- ADVERTENCIA PROFESIONAL (Aquí manejamos el error de seguridad) ---
-                    st.info(f"""
-                    📧 **Revisa tu correo ({email_usuario}) en los próximos 2 minutos.**
+                    st.error(f"**Error de Lectura:** {mensaje_n8n}")
                     
-                    ---
-                    ⚠️ **¿No recibes el PDF?** Si pasados 5 minutos no te llega el reporte, es muy probable que el sitio web tenga **bloqueos de seguridad anti-bots** (común en sitios de gobierno o bancos) que impiden nuestra auditoría externa.
+                    st.info("""
+                    **¿Por qué pasa esto?**
+                    Es muy probable que el sitio tenga un **bloqueo de seguridad anti-bots** (común en sitios de gobierno o bancos) que impide nuestra auditoría automática.
                     """)
-                    
-                else:
-                    status.update(label="Error de conexión", state="error", expanded=True)
-                    st.error("Hubo un problema técnico al conectar. Por favor intenta más tarde.")
                     
             except Exception as e:
-                st.error(f"Error de comunicación: {e}")
+                status.update(label="Error técnico", state="error")
+                st.error("El servidor está tardando en responder. Si el sitio es muy pesado, es posible que el reporte llegue igual a tu correo en unos minutos.")
 
 # --- PIE DE PÁGINA ---
 st.markdown("---")
@@ -119,6 +122,7 @@ st.markdown(
     """, 
     unsafe_allow_html=True
 )
+
 
 
 
