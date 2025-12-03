@@ -20,7 +20,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ⚠️ TU WEBHOOK AQUÍ (Revisa que sea el correcto)
-N8N_WEBHOOK_URL = "https://tu-n8n-server.com/webhook/..." 
+N8N_WEBHOOK_URL = "https://n8n-testi.hopto.org/webhook/analisis-ux" 
 
 # --- BARRA LATERAL (SIDEBAR) ---
 with st.sidebar:
@@ -110,6 +110,7 @@ if analyze_btn:
 
             except Exception as e:
                 st.error(f"😱 Error de conexión: {str(e)}")
+
 
 
 
