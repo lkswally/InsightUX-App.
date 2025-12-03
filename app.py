@@ -4,7 +4,7 @@ import json
 
 # --- CONFIGURACIÓN ---
 # ⚠️ IMPORTANTE: Reemplaza esto con tu URL del Webhook de n8n (Production URL preferiblemente)
-N8N_WEBHOOK_URL = "https://tu-n8n-server.com/webhook/..." 
+N8N_WEBHOOK_URL = "https://n8n-testi.hopto.org/webhook/analisis-ux" 
 
 # Configuración de la página (título, icono, layout)
 st.set_page_config(
@@ -80,6 +80,7 @@ if analyze_btn:
                         data = response.json()
                         
                         # Dependiendo de cómo
+
 
 
 
