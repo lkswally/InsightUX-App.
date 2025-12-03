@@ -1,67 +1,126 @@
 import streamlit as st
 import requests
 import json
+import time
 
-# --- CONFIGURACIÓN ---
-# Tu URL REAL (Recuperada de tus capturas)
-N8N_WEBHOOK_URL = "https://n8n-testi.hopto.org/webhook/analisis-ux"
-
+# --- CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(
-    page_title="InsightUX - MVP",
-    page_icon="🕵️‍♀️",
-    layout="centered"
+    page_title="InsightUX | Auditoría IA",
+    page_icon="🎨",
+    layout="centered",
+    initial_sidebar_state="expanded"
 )
 
-# --- INTERFAZ SIMPLE ---
-st.title("🕵️‍♀️ InsightUX")
-st.markdown("Diagnóstico de UX potenciado por IA. Ingresa tu sitio y recibe el reporte.")
+# --- ESTILOS CSS (Para que se vea limpio y oculte marcas de agua) ---
+st.markdown("""
+<style>
+    .stDeployButton {display:none;}
+    h1 {color: #FF4B4B;}
+    .stButton button {width: 100%; border-radius: 5px;}
+</style>
+""", unsafe_allow_html=True)
 
-st.divider()
+# 🔗 TU URL REAL (Ya configurada)
+N8N_WEBHOOK_URL = "https://n8n-testi.hopto.org/webhook/analisis-ux"
 
-# Formulario básico (Solo URL y Email)
-url_input = st.text_input("🔗 URL del sitio web a analizar", placeholder="https://ejemplo.com")
-email_input = st.text_input("✉️ Tu correo electrónico", placeholder="nombre@empresa.com")
+# --- BARRA LATERAL (SIDEBAR) ---
+with st.sidebar:
+    st.header("🕵️ InsightUX")
+    st.markdown("---")
+    st.markdown("""
+    **Pasos:**
+    1.  🌐 Ingresa la web.
+    2.  🎯 Define el perfil.
+    3.  📩 Recibe el reporte.
+    """)
+    st.info("💡 **Tip:** El perfil 'Gen Z' detecta si tu diseño se siente antiguo.")
+    st.caption("v.Stable | Powered by Gemini & n8n")
 
-if st.button("🚀 Analizar Sitio", type="primary"):
-    if not url_input or not url_input.startswith("http"):
-        st.error("⛔ Por favor ingresa una URL válida (con http:// o https://)")
+# --- ÁREA PRINCIPAL ---
+st.title("Evaluador de Experiencia UX")
+st.markdown("Diagnóstico de sitios web potenciado por Inteligencia Artificial.")
+st.markdown("---") 
+
+# --- FORMULARIO INTELIGENTE ---
+# 1. Input de URL (Sin obligar a poner http)
+url_input = st.text_input(
+    "🔗 Sitio web a analizar", 
+    placeholder="ejemplo.com",
+    help="Puedes escribirlo con o sin https://"
+)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    email_input = st.text_input("✉️ Tu correo", placeholder="tu@email.com")
+
+with col2:
+    persona_selected = st.selectbox(
+        "🎭 Perfil del Auditor",
+        options=[
+            "Experto en UX (Crítico Técnico)",
+            "Usuario Senior (+70 años, dificultad visual)",
+            "Gen Z (Impaciente, escanea rápido)",
+            "Comprador Impulsivo (Busca ofertas)",
+            "Usuario Desconfiado (Busca seguridad legal)"
+        ]
+    )
+
+st.write("") # Espacio separador
+analyze_btn = st.button("🚀 Iniciar Auditoría", type="primary")
+
+# --- LÓGICA DE PROCESAMIENTO ---
+if analyze_btn:
+    if not url_input:
+        st.warning("⚠️ Por favor ingresa una URL.")
+    elif not email_input:
+        st.warning("⚠️ Falta el correo electrónico.")
     else:
-        # Spinner clásico (compatible con todas las versiones)
-        with st.spinner("⏳ Conectando con el servidor... esto puede tardar unos segundos."):
+        # CORRECCIÓN AUTOMÁTICA DE URL (Lo que pediste)
+        url_final = url_input.strip()
+        if not url_final.startswith("http"):
+            url_final = "https://" + url_final
+
+        # Spinner compatible (Funciona en todas las versiones)
+        with st.spinner(f"🤖 El {persona_selected} está analizando {url_final}..."):
             try:
-                # Payload simple (Sin personalidad)
+                # Simular espera visual
+                time.sleep(1) 
+                
                 payload = {
-                    "url": url_input,
+                    "url": url_final,
+                    "persona": persona_selected,
                     "email": email_input
                 }
 
-                # Petición al servidor
+                # Envío de datos
                 response = requests.post(N8N_WEBHOOK_URL, json=payload)
 
+                # --- RESPUESTAS ---
                 if response.status_code == 200:
-                    try:
-                        data = response.json()
-                        # Busca el texto en cualquier campo posible
-                        resultado = data.get("output") or data.get("text") or data.get("message") or str(data)
-                        
-                        st.success("✅ ¡Análisis completado!")
-                        st.markdown("### Resultado:")
-                        st.markdown(resultado)
-                    except:
-                        st.success("✅ El análisis se envió correctamente.")
-                        st.write(response.text)
-                
-                elif response.status_code == 400:
-                    st.error("❌ El sitio web bloqueó el acceso (Seguridad Anti-Bot).")
-                
-                elif response.status_code == 500:
-                    st.error("🔥 Error interno del servidor (Revisa n8n).")
+                    data = response.json()
+                    # Extraer texto de cualquier formato que devuelva n8n
+                    analisis_texto = data.get("output") or data.get("text") or data.get("message") or str(data)
                     
+                    st.balloons() # ¡Festejo!
+                    st.success("✅ ¡Análisis Completado!")
+                    
+                    with st.expander("📄 Leer reporte preliminar", expanded=True):
+                        st.markdown(analisis_texto)
+                    
+                    st.info(f"📧 Enviando copia detallada a: {email_input}")
+
+                elif response.status_code == 400:
+                    st.error("🔒 El sitio tiene seguridad anti-robots. Intenta con otro.")
+                
+                elif response.status_code == 404:
+                    st.error("❌ Error 404: El Webhook de n8n no está activo o la URL cambió.")
+
                 else:
-                    st.error(f"Error desconocido: {response.status_code}")
+                    st.error(f"🔥 Error del servidor: {response.status_code}")
 
             except Exception as e:
-                st.error(f"😱 No se pudo conectar: {str(e)}")
+                st.error(f"😱 Error de conexión: {str(e)}")
 
 
 
