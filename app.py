@@ -1,127 +1,86 @@
 import streamlit as st
 import requests
-import time
+import json
 
-# --- CONFIGURACIÓN DE PÁGINA ---
+# --- CONFIGURACIÓN ---
+# ⚠️ IMPORTANTE: Reemplaza esto con tu URL del Webhook de n8n (Production URL preferiblemente)
+N8N_WEBHOOK_URL = "https://tu-n8n-server.com/webhook/..." 
+
+# Configuración de la página (título, icono, layout)
 st.set_page_config(
-    page_title="InsightUX - Auditoría IA",
-    page_icon="🔍",
+    page_title="InsightUX - Análisis IA",
+    page_icon="🕵️‍♀️",
     layout="centered"
 )
 
-# --- ESTILOS CSS ---
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
-
 # --- ENCABEZADO ---
-st.title("🔍 InsightUX")
-st.markdown("### Auditoría Técnica de UX, CRO y SEO")
+st.title("🕵️‍♀️ InsightUX")
 st.markdown("""
-Nuestro agente de IA analiza tu sitio web en tiempo real cruzando datos de:
-* 🧠 **Experiencia de Usuario (Heurísticas)**
-* 📈 **Potencial de Conversión (CRO)**
-* 🔎 **Posicionamiento en Buscadores (SEO)**
+**Tu analista de Experiencia de Usuario (UX) potenciado por IA.**
+Ingresa una URL, elige quién quieres que audite el sitio y recibe un informe detallado.
 """)
 
-st.markdown("---")
+st.divider()
 
-# --- FORMULARIO ---
-with st.form("analisis_form"):
-    st.write("#### 🚀 Solicitar diagnóstico gratuito")
-    
-    col1, col2 = st.columns([2, 1])
-    
-    url_input = st.text_input(
-        "Sitio Web", 
-        placeholder="ejemplo.com", 
-        help="Escribe el dominio (ej: saldo.com.ar)"
-    )
-    
-    email_usuario = st.text_input(
-        "¿Dónde enviamos el reporte?", 
-        placeholder="nombre@tuempresa.com"
-    )
-    
-    st.write("")
-    enviado = st.form_submit_button("✨ Iniciar Análisis Ahora", type="primary")
+# --- FORMULARIO DE ENTRADA ---
+col1, col2 = st.columns([3, 1])
 
-# --- LÓGICA DE PROCESAMIENTO HÍBRIDA ---
-if enviado:
-    if not url_input or not email_usuario:
-        st.warning("⚠️ Por favor, completa todos los campos para iniciar.")
+with col1:
+    url_input = st.text_input("🔗 URL del sitio web a analizar", placeholder="https://ejemplo.com")
+
+with col2:
+    # NUEVO: Selector de Personalidad
+    persona_selected = st.selectbox(
+        "🎭 ¿Quién audita?",
+        options=[
+            "Experto en UX (Técnico y crítico)",
+            "Usuario Senior (+70 años, dificultad visual)",
+            "Gen Z (Impaciente, escanea rápido)",
+            "Comprador Impulsivo (Busca ofertas)",
+            "Abogado (Busca términos legales y confianza)"
+        ],
+        index=0 # Por defecto selecciona la primera opción
+    )
+
+analyze_btn = st.button("🚀 Analizar Sitio", type="primary", use_container_width=True)
+
+# --- LÓGICA DE PROCESAMIENTO ---
+if analyze_btn:
+    if not url_input:
+        st.warning("⚠️ Por favor, ingresa una URL válida para comenzar.")
+    elif not url_input.startswith("http"):
+        st.error("⛔ La URL debe comenzar con http:// o https://")
     else:
-        # Limpieza de URL
-        url_final = url_input.strip()
-        if not url_final.startswith(('http://', 'https://')):
-            url_final = 'https://' + url_final
-            
-        # Feedback Visual de carga
-        with st.status("⚙️ Conectando con el servidor...", expanded=True) as status:
-            st.write("Validando URL y permisos de acceso...")
-            
-            # URL DE PRODUCCIÓN
-            webhook_url = "https://n8n-testi.hopto.org/webhook/analisis-ux"
-            
-            datos = {
-                "url": url_final,
-                "email": email_usuario
-            }
-            
+        # Mostramos un spinner mientras n8n trabaja
+        with st.spinner(f"🤖 El {persona_selected} está visitando el sitio... (Esto puede tardar unos segundos)"):
             try:
-                # Esperamos la respuesta rápida del Scraper (máx 20 segundos)
-                respuesta = requests.post(webhook_url, json=datos, timeout=20)
-                
-                # Intentamos leer el mensaje que manda n8n
-                try:
-                    mensaje_n8n = respuesta.json().get('message', 'Proceso finalizado.')
-                except:
-                    mensaje_n8n = "Respuesta del servidor recibida."
+                # Preparamos los datos para enviar a n8n
+                payload = {
+                    "url": url_input,
+                    "persona": persona_selected
+                }
 
-                # --- ESCENARIO 1: ÉXITO (Código 200 - Camino de arriba) ---
-                if respuesta.status_code == 200:
-                    status.update(label="✅ ¡Conexión Exitosa!", state="complete", expanded=True)
-                    
-                    st.success(f"**¡Excelente! {mensaje_n8n}**")
-                    
-                    st.markdown(f"""
-                    El agente de IA ya está trabajando en tu reporte para **{url_final}**.
-                    
-                    📬 **Te llegará al correo ({email_usuario}) en aproximadamente 2 minutos.**
-                    *(Puedes cerrar esta pestaña, el proceso continúa en la nube).*
-                    """)
-                
-                # --- ESCENARIO 2: ERROR (Código 400 - Camino de abajo) ---
-                elif respuesta.status_code >= 400:
-                    status.update(label="🛑 No se pudo analizar", state="error", expanded=True)
-                    
-                    st.error(f"**Error de Lectura:** {mensaje_n8n}")
-                    
-                    st.info("""
-                    **¿Por qué pasa esto?**
-                    Es muy probable que el sitio tenga un **bloqueo de seguridad anti-bots** (común en sitios de gobierno o bancos) que impide nuestra auditoría automática.
-                    """)
-                    
-            except Exception as e:
-                status.update(label="Error técnico", state="error")
-                st.error("El servidor está tardando en responder. Si el sitio es muy pesado, es posible que el reporte llegue igual a tu correo en unos minutos.")
+                # Enviamos la petición al Webhook
+                response = requests.post(N8N_WEBHOOK_URL, json=payload)
 
-# --- PIE DE PÁGINA ---
-st.markdown("---")
-st.markdown(
-    """
-    <div style='text-align: center; color: #888; font-size: 12px;'>
-        InsightUX © 2025 | Desarrollado por Antonella C. & Lucas R.<br>
-        Potenciado por Google Gemini Pro
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
+                # --- MANEJO DE RESPUESTAS (Según lo que configuramos en el IF) ---
+                
+                # Caso 1: Error del Scraper (Configuramos código 400 en n8n)
+                if response.status_code == 400:
+                    try:
+                        error_data = response.json()
+                        st.error(f"❌ **No pudimos leer el sitio:** {error_data.get('message', 'Bloqueo de seguridad detectado.')}")
+                        st.info("Intenta con otra URL o verifica que el sitio sea público.")
+                    except:
+                        st.error("❌ Error 400: El sitio bloqueó el acceso, pero no recibimos mensaje detallado.")
+
+                # Caso 2: Éxito (Código 200)
+                elif response.status_code == 200:
+                    try:
+                        data = response.json()
+                        
+                        # Dependiendo de cómo
+
 
 
 
