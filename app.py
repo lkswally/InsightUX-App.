@@ -19,9 +19,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 🔗 IMPORTANTE: CAMBIÁ ESTO POR TU URL DE PRODUCCIÓN DE N8N
-# (Recordá activar el switch "Active" arriba a la derecha en n8n)
-N8N_WEBHOOK_URL = "https://n8n-testi.hopto.org/webhook/analisis-ux" 
+# 🔗 URL DE PRODUCCIÓN DE N8N (PEGA TU URL AQUI)
+N8N_WEBHOOK_URL = "PEGAR_AQUI_TU_URL_DE_PRODUCCION_DEL_WEBHOOK"
 
 # --- SIDEBAR ---
 with st.sidebar:
@@ -63,7 +62,7 @@ if st.button("🚀 Auditar Ahora", type="primary"):
                 # --- LÓGICA DE RESPUESTA ---
                 if response.status_code == 200:
                     data = response.json()
-                    # Intentamos obtener el texto de varias formas por seguridad
+                    # Intentamos obtener el texto de la respuesta
                     analisis = data.get("output", "Análisis completado (revisá tu email).")
                     
                     st.success("✅ ¡Auditoría Finalizada!")
@@ -80,5 +79,6 @@ if st.button("🚀 Auditar Ahora", type="primary"):
                     
             except Exception as e:
                 st.error(f"Error de conexión: {e}")
+
 
 
