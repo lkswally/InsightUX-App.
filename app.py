@@ -20,7 +20,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 🔗 URL DE PRODUCCIÓN DE N8N (PEGA TU URL AQUI)
-N8N_WEBHOOK_URL = "http://n8n-testi.hopto.org:5678/webhook/test-lucas"
+N8N_WEBHOOK_URL = "http://159.112.138.149:5678/webhook/test-lucas"
 
 # --- SIDEBAR ---
 with st.sidebar:
@@ -79,6 +79,7 @@ if st.button("🚀 Auditar Ahora", type="primary"):
                     
             except Exception as e:
                 st.error(f"Error de conexión: {e}")
+
 
 
 
