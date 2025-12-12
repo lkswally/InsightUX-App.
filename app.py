@@ -22,8 +22,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 🔗 URL DEL WEBHOOK DE N8N
-# Si estás dentro del mismo servidor (Docker), usa la IP interna: http://172.17.0.1:5678...
-# Si estás probando desde tu PC local, usa la IP pública: http://159.112.138.149:5678...
+# Usamos la IP interna de Docker porque n8n y Streamlit viven juntos
 N8N_WEBHOOK_URL = "http://172.17.0.1:5678/webhook/test-lucas"
 
 # --- SIDEBAR (INFORMACIÓN) ---
@@ -106,8 +105,26 @@ with col_team1:
     <div class="team-card">
         <h3>Lucas Rojo</h3>
         <p style="color: #666; font-weight: bold;">Technical Automation Architect</p>
-        <p style="font-size: 14px;">Especialista en
+        <p style="font-size: 14px;">Especialista en flujos de datos, integraciones API y arquitectura de soluciones digitales.</p>
+        <p>
+            <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank">🔗 LinkedIn</a> | 
+            <a href="mailto:lksrojo86@gmail.com">✉️ Email</a>
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
+with col_team2:
+    st.markdown("""
+    <div class="team-card">
+        <h3>Antonella Calabro</h3>
+        <p style="color: #666; font-weight: bold;">Senior UX Auditor</p>
+        <p style="font-size: 14px;">Experta en experiencia de usuario, usabilidad y estrategias de conversión (CRO).</p>
+        <p>
+            <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank">🔗 LinkedIn</a> | 
+            <a href="mailto:antonellacalabro@gmail.com">✉️ Email</a>
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 
