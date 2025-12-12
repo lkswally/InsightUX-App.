@@ -144,9 +144,71 @@ st.markdown("---")
 
 # --- FORMULARIO ---
 # Usamos columnas para centrar un poco si la pantalla es muy ancha, 
-# pero en '
+# pero en 'centered' layout ocupa el medio.
+col_form, _ = st.columns([1, 0.01]) 
 
+with col_form:
+    url_input = st.text_input("🔗 URL del sitio web", placeholder="ejemplo.com.ar")
+    st.write("") # Espaciador
+    email_input = st.text_input("✉️ Tu correo electrónico", placeholder="tu@email.com")
+    
+    st.write("")
+    st.write("")
+    
+    # Botón de acción
+    if st.button("🚀 INICIAR AUDITORÍA"):
+        if not url_input or not email_input:
+            st.warning("⚠️ Faltan datos. Completá URL y Email para continuar.")
+        else:
+            # Lógica de corrección
+            url_final = url_input.strip()
+            if not url_final.startswith(("http://", "https://")):
+                url_final = "https://" + url_final
 
+            # Animación Pro
+            with st.spinner(f"🧠 La IA está analizando {url_final}..."):
+                try:
+                    time.sleep(1.5) # Pequeño drama para que se vea el spinner
+                    
+                    payload = {"url": url_final, "email": email_input}
+                    response = requests.post(N8N_WEBHOOK_URL, json=payload)
+
+                    if response.status_code == 200:
+                        st.success("✅ ¡Éxito! El reporte está viajando a tu email.")
+                        st.balloons()
+                    else:
+                        st.error(f"⚠️ Error de conexión ({response.status_code}).")
+                except Exception as e:
+                    st.error(f"❌ Error: {e}")
+
+# --- SECCIÓN EQUIPO (Footer) ---
+st.write("")
+st.write("")
+st.markdown("---")
+st.markdown("<h3 style='text-align: center; margin-bottom: 30px;'>Expertos detrás del Engine</h3>", unsafe_allow_html=True)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("""
+    <div class="team-card">
+        <h4>Lucas Rojo</h4>
+        <p>Technical Automation Architect</p>
+        <a class="team-link" href="mailto:lksrojo86@gmail.com">Contactar</a>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.markdown("""
+    <div class="team-card">
+        <h4>Antonella Calabro</h4>
+        <p>Senior UX Auditor</p>
+        <a class="team-link" href="mailto:antonellacalabro@gmail.com">Contactar</a>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.write("")
+st.write("")
 
 
 
