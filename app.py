@@ -1,184 +1,150 @@
 import streamlit as st
 import requests
 import json
+import time
 
-# --- CONFIGURACIÓN DE PÁGINA (MODO OSCURO FORZADO) ---
+# --- CONFIGURACIÓN INICIAL ---
 st.set_page_config(
     page_title="InsightUX | Auditoría IA",
-    page_icon="🕵️‍♀️",
+    page_icon="⚡",
     layout="centered",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# --- ESTILOS CSS PREMIUM (DISEÑO DARK/PRO) ---
+# --- CSS DE ALTO IMPACTO (GLASSMORPHISM) ---
 st.markdown("""
 <style>
-    /* Forzar fondo oscuro y texto claro */
+    /* 1. FONDO GLOBAL CON DEGRADADO */
     .stApp {
-        background-color: #0E1117;
-        color: #FAFAFA;
+        background: rgb(14,17,23);
+        background: linear-gradient(135deg, rgba(14,17,23,1) 0%, rgba(30,33,48,1) 100%);
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* 2. TÍTULOS CON GRADIENTE */
+    h1 {
+        background: -webkit-linear-gradient(45deg, #FF4B4B, #FF914D);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800 !important;
+        font-size: 3rem !important;
+        text-align: center;
+        padding-bottom: 10px;
     }
     
-    /* Botones personalizados */
-    .stButton button {
+    h3 {
+        color: #E0E0E0 !important;
+        font-weight: 600;
+    }
+
+    /* 3. INPUTS MODERNOS (Cajas de texto) */
+    .stTextInput input {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        padding: 15px !important;
+        transition: all 0.3s ease;
+    }
+    .stTextInput input:focus {
+        border: 1px solid #FF4B4B !important;
+        box-shadow: 0 0 15px rgba(255, 75, 75, 0.2);
+    }
+    .stTextInput label {
+        color: #BBBBBB !important;
+        font-size: 0.9rem;
+    }
+
+    /* 4. BOTÓN PRINCIPAL (NEÓN) */
+    div.stButton > button {
         width: 100%;
-        border-radius: 8px;
-        font-weight: bold;
-        padding: 12px;
-        background-color: #FF4B4B; 
+        background: linear-gradient(90deg, #FF4B4B 0%, #CC0000 100%);
         color: white;
         border: none;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 50px; /* Redondo */
+        box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-    .stButton button:hover {
-        background-color: #D43F3F;
+    div.stButton > button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 75, 75, 0.6);
+    }
+
+    /* 5. TARJETAS DEL EQUIPO (CRISTAL) */
+    .team-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    .team-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 75, 75, 0.3);
+    }
+    .team-card h4 {
+        color: white;
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+    .team-card p {
+        color: #888;
+        font-size: 0.85rem;
+        margin-bottom: 15px;
+    }
+    .team-link {
+        color: #FF4B4B;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.9rem;
+        border: 1px solid #FF4B4B;
+        padding: 5px 15px;
+        border-radius: 20px;
+        transition: all 0.3s;
+    }
+    .team-link:hover {
+        background-color: #FF4B4B;
         color: white;
     }
 
-    /* Tarjetas del Equipo (Estilo Glassmorphism) */
-    .team-card {
-        background-color: #262730;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        text-align: center;
-        border: 1px solid #363945;
-        margin-bottom: 10px;
-    }
-    .team-card h3 {
-        color: #FF4B4B;
-        margin: 0 0 5px 0;
-        font-size: 1.2rem;
-    }
-    .team-card p {
-        font-size: 0.9rem;
-        color: #C0C0C0;
-    }
-    .team-card a {
-        color: #4da6ff;
-        text-decoration: none;
-    }
-
-    /* Caja del Reporte */
-    .report-container {
-        background-color: #1E1E1E;
-        padding: 25px;
-        border-radius: 10px;
-        border-left: 5px solid #FF4B4B;
-        margin-top: 20px;
-    }
-    
-    /* Ocultar elementos de Streamlit */
-    .stDeployButton {display:none;}
+    /* Ocultar elementos molestos */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
+    .stDeployButton {display:none;}
+    
 </style>
 """, unsafe_allow_html=True)
 
-# 🔗 URL PÚBLICA (CRUCIAL PARA QUE FUNCIONE EN LA NUBE)
-# Apunta a tu VPS desde afuera
+# 🔗 CONEXIÓN
 N8N_WEBHOOK_URL = "http://159.112.138.149:5678/webhook/test-lucas"
 
-# --- SIDEBAR ---
-with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3094/3094364.png", width=80)
-    st.header("InsightUX Engine")
-    st.markdown("---")
-    st.info("""
-    **🚀 Cómo funciona:**
-    1. Ingresas la URL de tu Landing Page.
-    2. Nuestra IA analiza UX, UI y Copywriting.
-    3. Recibes un plan de mejora en tu email.
-    """)
-    st.caption("v2.0 Stable | Powered by n8n & Gemini")
+# --- UI PRINCIPAL ---
 
-# --- CABECERA ---
-st.title("Evaluador de Experiencia UX 🚀")
-st.markdown("""
-<div style='background-color: #262730; padding: 15px; border-radius: 10px; border-left: 5px solid #FF4B4B; margin-bottom: 30px;'>
-    <strong>Diagnóstico IA:</strong> Descubre por qué tus visitas no se convierten en clientes. 
-    Analizamos usabilidad, fricciones y psicología del usuario.
-</div>
-""", unsafe_allow_html=True)
+# Espacio superior
+st.write("")
+st.write("")
+
+st.title("InsightUX Engine ⚡")
+st.markdown(
+    "<p style='text-align: center; color: #BBB; font-size: 1.1rem;'>Auditoría de Landing Pages potenciada por Inteligencia Artificial.</p>", 
+    unsafe_allow_html=True
+)
+st.markdown("---")
 
 # --- FORMULARIO ---
-col1, col2 = st.columns([2, 1])
-with col1:
-    url_input = st.text_input("🔗 URL del sitio web", placeholder="tupagina.com")
-with col2:
-    email_input = st.text_input("✉️ Tu correo", placeholder="nombre@empresa.com")
-
-# --- BOTÓN DE ACCIÓN ---
-if st.button("🔍 AUDITAR AHORA", type="primary"):
-    if not url_input or not email_input:
-        st.warning("⚠️ Falta información. Por favor completa URL y Email.")
-    else:
-        # 1. Corrección automática de URL (Tu código favorito)
-        url_final = url_input.strip()
-        if not url_final.startswith(("http://", "https://")):
-            url_final = "https://" + url_final
-
-        # 2. Spinner de carga
-        with st.spinner(f"📡 Conectando satélites... Escaneando {url_final}"):
-            try:
-                # Payload para n8n
-                payload = {"url": url_final, "email": email_input}
-                
-                # Envío al servidor
-                response = requests.post(N8N_WEBHOOK_URL, json=payload)
-
-                if response.status_code == 200:
-                    data = response.json()
-                    analisis = data.get("output", "✅ Análisis enviado. Revisa tu correo.")
-                    
-                    st.success("¡Diagnóstico Exitoso!")
-                    st.balloons()
-                    
-                    # Mostrar resultado lindo
-                    st.markdown("### 📝 Resumen Ejecutivo")
-                    st.markdown(f'<div class="report-container">{analisis}</div>', unsafe_allow_html=True)
-                    st.info("📨 El reporte completo ha sido enviado a tu correo.")
-                        
-                elif response.status_code == 400:
-                    st.error("🔒 No pudimos entrar al sitio. Verifica que la URL sea pública.")
-                else:
-                    st.error(f"⚠️ Error del servidor ({response.status_code}).")
-                    
-            except Exception as e:
-                st.error(f"❌ Error de conexión: {e}")
-
-# --- SECCIÓN EQUIPO (Mix Diseño Nuevo + Estética Dark) ---
-st.markdown("---")
-st.subheader("🤝 Expertos detrás de la IA")
-
-col_team1, col_team2 = st.columns(2)
-
-with col_team1:
-    st.markdown("""
-    <div class="team-card">
-        <h3>Lucas Rojo</h3>
-        <p style="font-weight: bold; color: #fff;">Technical Automation Architect</p>
-        <p>Arquitectura de datos, integraciones API y desarrollo de soluciones No-Code.</p>
-        <p>
-            <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank">🔗 LinkedIn</a> | 
-            <a href="mailto:lksrojo86@gmail.com">✉️ Contacto</a>
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col_team2:
-    st.markdown("""
-    <div class="team-card">
-        <h3>Antonella Calabro</h3>
-        <p style="font-weight: bold; color: #fff;">Senior UX Auditor</p>
-        <p>Estrategia de conversión (CRO), usabilidad y psicología del consumidor.</p>
-        <p>
-            <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank">🔗 LinkedIn</a> | 
-            <a href="mailto:antonellacalabro@gmail.com">✉️ Contacto</a>
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-
+# Usamos columnas para centrar un poco si la pantalla es muy ancha, 
+# pero en '
 
 
 
