@@ -43,12 +43,18 @@ st.markdown("""
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 12px !important;
-        padding: 5px !important; /* Ajuste para alinear select y inputs */
+        padding: 8px !important; 
     }
     
-    /* Estilo específico para el texto dentro del selectbox */
+    /* Texto dentro del selectbox */
     .stSelectbox div[data-baseweb="select"] span {
         color: white !important;
+        font-weight: 500;
+    }
+    
+    /* Icono del dropdown */
+    .stSelectbox svg { 
+        fill: #FF4B4B !important;
     }
 
     .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus-within {
@@ -75,7 +81,7 @@ st.markdown("""
         font-weight: bold;
         margin: 4px 2px;
         cursor: pointer;
-        border-radius: 50px; /* Redondo */
+        border-radius: 50px; 
         box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
         transition: transform 0.2s, box-shadow 0.2s;
     }
@@ -135,6 +141,16 @@ st.markdown("""
 # 🔗 CONEXIÓN
 N8N_WEBHOOK_URL = "http://159.112.138.149:5678/webhook/test-lucas"
 
+# --- LÓGICA DE AUDIENCIAS (MAPEO) ---
+# Diccionario para mapear "Texto Bonito" -> "Valor para N8N"
+OPCIONES_AUDIENCIA = {
+    "🌎 Público General (Todos)": "general",
+    "📸 Gen Z (Visual y Rápido)": "gen_z",
+    "💻 Millennials (Social y UX)": "millennials",
+    "📊 Gen X (Datos Claros)": "gen_x",
+    "🛡️ Boomers (Seguridad Total)": "baby_boomers"
+}
+
 # --- UI PRINCIPAL ---
 
 # Espacio superior
@@ -149,28 +165,21 @@ st.markdown(
 st.markdown("---")
 
 # --- FORMULARIO ---
-# Usamos columnas para centrar un poco si la pantalla es muy ancha
 col_form, _ = st.columns([1, 0.01]) 
 
 with col_form:
     url_input = st.text_input("🔗 URL del sitio web", placeholder="ejemplo.com.ar")
-    st.write("") # Espaciador
+    st.write("") 
     email_input = st.text_input("✉️ Tu correo electrónico", placeholder="tu@email.com")
     
     st.write("")
     
-    # --- NUEVO SELECTOR DE AUDIENCIA ---
-    # Esto envía valores simples ('millennials', etc) pero muestra texto descriptivo
-    generacion_input = st.selectbox(
-        "👥 ¿A quién le quieres vender? (Define la personalidad de la IA)",
-        options=["millennials", "baby_boomers", "gen_x", "gen_z"],
-        format_func=lambda x: {
-            "millennials": "Millennials (Experiencia y Social)",
-            "baby_boomers": "Baby Boomers (Seguridad y Claridad)",
-            "gen_x": "Generación X (Datos y Eficiencia)",
-            "gen_z": "Generación Z (Visual y Rapidez)"
-        }.get(x),
-        index=0 # Por defecto Millennials
+    # --- SELECTOR DE AUDIENCIA MEJORADO ---
+    # Usamos las llaves del diccionario para mostrar el texto bonito
+    audiencia_seleccionada = st.selectbox(
+        "🎯 ¿Cuál es tu cliente ideal?",
+        options=list(OPCIONES_AUDIENCIA.keys()),
+        index=0 
     )
     # -----------------------------------
     
@@ -187,16 +196,19 @@ with col_form:
             if not url_final.startswith(("http://", "https://")):
                 url_final = "https://" + url_final
 
+            # Obtener el valor limpio para enviar a n8n (ej: 'gen_z')
+            valor_generacion = OPCIONES_AUDIENCIA[audiencia_seleccionada]
+
             # Animación Pro
-            with st.spinner(f"🧠 La IA está analizando {url_final} para audiencia {generacion_input}..."):
+            with st.spinner(f"🧠 Analizando para {audiencia_seleccionada}..."):
                 try:
-                    time.sleep(1.5) # Pequeño drama para que se vea el spinner
+                    time.sleep(1.0) 
                     
-                    # AQUÍ ESTÁ LA CLAVE: Enviamos la nueva variable 'generacion'
+                    # PAYLOAD: Enviamos el valor limpio (mapped value)
                     payload = {
                         "url": url_final, 
                         "email": email_input,
-                        "generacion": generacion_input
+                        "generacion": valor_generacion
                     }
                     
                     response = requests.post(N8N_WEBHOOK_URL, json=payload)
@@ -237,7 +249,6 @@ with col2:
 
 st.write("")
 st.write("")
-
 
 
 
