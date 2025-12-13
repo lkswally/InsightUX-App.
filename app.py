@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (GLASSMORPHISM) ---
+# --- CSS DE ALTO IMPACTO (CORREGIDO) ---
 st.markdown("""
 <style>
     /* 1. FONDO GLOBAL CON DEGRADADO */
@@ -21,7 +21,7 @@ st.markdown("""
         font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* 2. TÍTULOS CON GRADIENTE */
+    /* 2. TÍTULOS PRINCIPALES */
     h1 {
         background: -webkit-linear-gradient(45deg, #FF4B4B, #FF914D);
         -webkit-background-clip: text;
@@ -37,13 +37,21 @@ st.markdown("""
         font-weight: 600;
     }
 
-    /* 3. INPUTS MODERNOS (Cajas de texto y Select) */
+    /* 3. INPUTS Y LABELS (CORRECCIÓN DE VISIBILIDAD) */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
-        background-color: rgba(255, 255, 255, 0.05) !important;
+        background-color: rgba(255, 255, 255, 0.08) !important; /* Un poco más claro */
         color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
         padding: 8px !important; 
+    }
+    
+    /* CORRECCIÓN: Labels ahora son blancos y legibles */
+    .stTextInput label, .stSelectbox label {
+        color: #FFFFFF !important; /* Blanco puro */
+        font-weight: 600 !important; /* Más gordito */
+        font-size: 1rem !important;
+        margin-bottom: 5px !important;
     }
     
     /* Texto dentro del selectbox */
@@ -52,19 +60,10 @@ st.markdown("""
         font-weight: 500;
     }
     
-    /* Icono del dropdown */
-    .stSelectbox svg { 
-        fill: #FF4B4B !important;
-    }
-
-    .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus-within {
-        border: 1px solid #FF4B4B !important;
-        box-shadow: 0 0 15px rgba(255, 75, 75, 0.2);
-    }
-    
-    .stTextInput label, .stSelectbox label {
-        color: #BBBBBB !important;
-        font-size: 0.9rem;
+    /* Evitar que el texto del menú se corte */
+    .stSelectbox div[data-baseweb="popover"] {
+        width: auto !important;
+        min-width: 100% !important;
     }
 
     /* 4. BOTÓN PRINCIPAL (NEÓN) */
@@ -73,13 +72,13 @@ st.markdown("""
         background: linear-gradient(90deg, #FF4B4B 0%, #CC0000 100%);
         color: white;
         border: none;
-        padding: 15px 32px;
+        padding: 16px 32px;
         text-align: center;
         text-decoration: none;
         display: inline-block;
         font-size: 18px;
         font-weight: bold;
-        margin: 4px 2px;
+        margin-top: 10px;
         cursor: pointer;
         border-radius: 50px; 
         box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
@@ -90,7 +89,7 @@ st.markdown("""
         box-shadow: 0 8px 25px rgba(255, 75, 75, 0.6);
     }
 
-    /* 5. TARJETAS DEL EQUIPO (CRISTAL) */
+    /* 5. TARJETAS DEL EQUIPO */
     .team-card {
         background: rgba(255, 255, 255, 0.03);
         backdrop-filter: blur(10px);
@@ -130,7 +129,6 @@ st.markdown("""
         color: white;
     }
 
-    /* Ocultar elementos molestos */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     .stDeployButton {display:none;}
@@ -141,19 +139,17 @@ st.markdown("""
 # 🔗 CONEXIÓN
 N8N_WEBHOOK_URL = "http://159.112.138.149:5678/webhook/test-lucas"
 
-# --- LÓGICA DE AUDIENCIAS (MAPEO) ---
-# Diccionario para mapear "Texto Bonito" -> "Valor para N8N"
+# --- LÓGICA DE AUDIENCIAS (Texto Corto y Directo) ---
 OPCIONES_AUDIENCIA = {
-    "🌎 Público General (Todos)": "general",
-    "📸 Gen Z (Visual y Rápido)": "gen_z",
-    "💻 Millennials (Social y UX)": "millennials",
-    "📊 Gen X (Datos Claros)": "gen_x",
-    "🛡️ Boomers (Seguridad Total)": "baby_boomers"
+    "🌎 General (Para todos)": "general",
+    "📸 Gen Z (Visual/Rápido)": "gen_z",
+    "💻 Millennials (UX/Social)": "millennials",
+    "📊 Gen X (Datos/Serio)": "gen_x",
+    "🛡️ Boomers (Seguridad)": "baby_boomers"
 }
 
 # --- UI PRINCIPAL ---
 
-# Espacio superior
 st.write("")
 st.write("")
 
@@ -174,14 +170,12 @@ with col_form:
     
     st.write("")
     
-    # --- SELECTOR DE AUDIENCIA MEJORADO ---
-    # Usamos las llaves del diccionario para mostrar el texto bonito
+    # --- SELECTOR DE AUDIENCIA ---
     audiencia_seleccionada = st.selectbox(
         "🎯 ¿Cuál es tu cliente ideal?",
         options=list(OPCIONES_AUDIENCIA.keys()),
         index=0 
     )
-    # -----------------------------------
     
     st.write("")
     st.write("")
@@ -189,22 +183,29 @@ with col_form:
     # Botón de acción
     if st.button("🚀 INICIAR AUDITORÍA"):
         if not url_input or not email_input:
-            st.warning("⚠️ Faltan datos. Completá URL y Email para continuar.")
+            st.warning("⚠️ Por favor completa todos los datos.")
         else:
-            # Lógica de corrección de URL
+            # Corrección de URL
             url_final = url_input.strip()
             if not url_final.startswith(("http://", "https://")):
                 url_final = "https://" + url_final
 
-            # Obtener el valor limpio para enviar a n8n (ej: 'gen_z')
             valor_generacion = OPCIONES_AUDIENCIA[audiencia_seleccionada]
 
-            # Animación Pro
-            with st.spinner(f"🧠 Analizando para {audiencia_seleccionada}..."):
+            # --- UX: SPINNER CON MENSAJES ALEATORIOS ---
+            mensajes_carga = [
+                f"🧠 Analizando estructura para {audiencia_seleccionada}...",
+                "📡 Conectando con escáneres heurísticos...",
+                "🕵️‍♀️ Buscando reputación de marca en internet...",
+                "🎨 Evaluando contrastes y accesibilidad..."
+            ]
+            
+            with st.spinner("Iniciando motores de IA..."):
                 try:
-                    time.sleep(1.0) 
-                    
-                    # PAYLOAD: Enviamos el valor limpio (mapped value)
+                    # Simulación de pasos para mejor UX
+                    for msg in mensajes_carga:
+                        time.sleep(0.6)
+                        
                     payload = {
                         "url": url_final, 
                         "email": email_input,
@@ -214,14 +215,27 @@ with col_form:
                     response = requests.post(N8N_WEBHOOK_URL, json=payload)
 
                     if response.status_code == 200:
-                        st.success("✅ ¡Éxito! El reporte está viajando a tu email.")
+                        # --- ÉXITO ---
                         st.balloons()
+                        st.success("✅ ¡Solicitud enviada con éxito!")
+                        
+                        # Mensaje informativo sobre posibles bloqueos (Seguridad)
+                        st.info("""
+                        **📢 Importante:** Tu reporte está siendo generado y llegará a tu email en unos minutos.
+                        
+                        *Si no lo recibes en 10 minutos, es probable que el sitio web tenga bloqueos de seguridad anti-bot que impiden nuestra lectura.*
+                        """)
+                        
                     else:
-                        st.error(f"⚠️ Error de conexión ({response.status_code}).")
-                except Exception as e:
-                    st.error(f"❌ Error: {e}")
+                        # --- ERROR DE SERVIDOR ---
+                        st.error(f"⚠️ Hubo un problema de conexión ({response.status_code}).")
+                        st.markdown(f"El servidor no pudo procesar la solicitud. Intenta con otra URL o espera unos minutos.")
 
-# --- SECCIÓN EQUIPO (Footer) ---
+                except Exception as e:
+                    st.error("❌ Error inesperado")
+                    st.warning("Verifica tu conexión a internet o intenta más tarde.")
+
+# --- SECCIÓN EQUIPO ---
 st.write("")
 st.write("")
 st.markdown("---")
@@ -249,6 +263,5 @@ with col2:
 
 st.write("")
 st.write("")
-
 
 
