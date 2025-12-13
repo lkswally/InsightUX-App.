@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (CORREGIDO) ---
+# --- CSS REPARADO (VISIBILIDAD Y DISEÑO) ---
 st.markdown("""
 <style>
     /* 1. FONDO GLOBAL */
@@ -35,28 +35,37 @@ st.markdown("""
     
     h3 { color: #E0E0E0 !important; font-weight: 600; }
 
-    /* 3. INPUTS Y SELECTS (CORRECCIÓN DE VISIBILIDAD) */
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
+    /* 3. INPUTS DE TEXTO (CORRECCIÓN DE VISIBILIDAD) */
+    .stTextInput input {
         background-color: rgba(255, 255, 255, 0.08) !important;
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
         padding: 12px 16px !important;
-        font-size: 1.1rem !important;
-        line-height: 1.5 !important;
-        min-height: 50px !important;
     }
 
-    /* --- SOLUCIÓN PARA EL TEXTO INVISIBLE DEL SELECT --- */
-    /* Fuerza el color blanco en el texto seleccionado */
-    .stSelectbox div[data-baseweb="select"] span {
+    /* 4. ARREGLO DEL MENU DESPLEGABLE (SELECTBOX) - CRÍTICO */
+    /* El contenedor principal del select */
+    div[data-baseweb="select"] > div {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 12px !important;
         color: white !important;
-        fill: white !important;
-        font-weight: 500;
     }
-    /* Asegura que cualquier elemento interno sea blanco */
-    .stSelectbox div[data-baseweb="select"] * {
+    
+    /* Forzar que CUALQUIER texto dentro del select sea blanco */
+    div[data-baseweb="select"] span, div[data-baseweb="select"] div {
         color: white !important; 
+        -webkit-text-fill-color: white !important;
+    }
+
+    /* El menú que se abre (las opciones) */
+    div[data-baseweb="popover"] {
+        background-color: #1E2130 !important;
+        border: 1px solid #444 !important;
+    }
+    div[data-baseweb="menu"] li {
+        color: white !important;
     }
 
     /* TÍTULOS DE INPUTS (LABELS) CON NEÓN */
@@ -83,45 +92,31 @@ st.markdown("""
         box-shadow: 0 0 12px rgba(255, 75, 75, 0.8);
     }
 
-    /* Menú desplegable (Popover) */
-    .stSelectbox div[data-baseweb="popover"] {
-        background-color: #1E2130 !important;
-        border: 1px solid #444 !important;
-    }
-    .stSelectbox svg { fill: #FF4B4B !important; }
-
-    /* Focus */
-    .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus-within {
-        border: 1px solid #FF4B4B !important;
-        box-shadow: 0 0 20px rgba(255, 75, 75, 0.35);
-        background-color: rgba(255, 255, 255, 0.12) !important;
-    }
-
-    /* 4. BOTÓN DE ENVÍO (ANIMACIÓN RESTAURADA) */
+    /* 5. BOTÓN DE ENVÍO (MEJORADO Y CENTRADO) */
     div.stButton > button {
         width: 100%;
         background: linear-gradient(90deg, #FF4B4B 0%, #CC0000 100%);
         color: white;
         border: none;
-        padding: 20px 32px;
+        padding: 15px 32px;
         text-align: center;
         text-decoration: none;
-        display: inline-block;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 800;
-        margin-top: 30px;
         cursor: pointer;
         border-radius: 50px; 
         box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
         transition: transform 0.2s, box-shadow 0.2s;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
-    /* Efecto Hover corregido */
     div.stButton > button:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 30px rgba(255, 75, 75, 0.7);
+        color: #fff !important;
     }
 
-    /* 5. TARJETAS DEL EQUIPO */
+    /* 6. TARJETAS DEL EQUIPO */
     .team-card {
         background: rgba(0, 194, 255, 0.05);
         backdrop-filter: blur(10px);
@@ -205,15 +200,17 @@ st.markdown(
 st.markdown("---")
 
 # --- FORMULARIO ---
-col_form, _ = st.columns([1, 0.01]) 
+# Usamos columnas para centrar el formulario si la pantalla es muy ancha
+_, col_main, _ = st.columns([0.1, 0.8, 0.1])
 
-with col_form:
+with col_main:
     url_input = st.text_input("🔗 URL DEL SITIO WEB", placeholder="ejemplo.com.ar")
     st.write("") 
     
     email_input = st.text_input("✉️ TU CORREO ELECTRÓNICO", placeholder="tu@email.com")
     st.write("")
     
+    # Aquí es donde aplicamos el CSS "Selectbox" reparado
     audiencia_seleccionada = st.selectbox(
         "👁️ MIRA TU WEB CON OJOS DE...",
         options=list(OPCIONES_AUDIENCIA.keys()),
@@ -222,8 +219,19 @@ with col_form:
     
     st.write("")
     st.write("")
+
+    # --- BOTÓN CENTRADO ---
+    # Creamos 3 columnas para que el botón quede en el medio y no ocupe todo el ancho
+    c1, c2, c3 = st.columns([0.2, 0.6, 0.2])
     
-    if st.button("🚀 INICIAR AUDITORÍA"):
+    with c2:
+        boton_submit = st.button("🚀 INICIAR AUDITORÍA")
+
+    # --- ESPACIO SEPARADOR ---
+    # Esto separa el botón del mensaje de éxito para que no queden pegados
+    st.markdown("<br>", unsafe_allow_html=True) 
+
+    if boton_submit:
         if not url_input or not email_input:
             st.warning("⚠️ Por favor completa todos los datos.")
         else:
@@ -256,16 +264,19 @@ with col_form:
                     if response.status_code == 200:
                         # --- ÉXITO ---
                         st.balloons()
-                        st.success("✅ ¡Solicitud enviada con éxito!")
-                        st.info(f"**📢 Importante:** Tu reporte simulará la visión de un usuario **{audiencia_seleccionada.split(' ')[1]}**. Llegará a tu email en unos minutos.")
+                        # Usamos un contenedor verde personalizado para el mensaje
+                        st.markdown(f"""
+                        <div style="background-color: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #dcfce7; padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px;">
+                            <h3 style="margin:0; color: #22c55e !important;">✅ ¡Solicitud enviada con éxito!</h3>
+                            <p style="margin-top: 10px; font-size: 1.1rem;">Tu reporte simulará la visión de un usuario <strong>{audiencia_seleccionada.split(' ')[1]}</strong>.</p>
+                            <p style="font-size: 0.9rem; opacity: 0.8;">Revisa tu email en unos minutos.</p>
+                        </div>
+                        """, unsafe_allow_html=True)
                         
                     elif response.status_code == 400:
-                        # --- ERROR DE LECTURA (ANTI-BOT) ---
                         st.error("🛡️ No pudimos leer este sitio web.")
-                        st.warning("Es probable que la página tenga bloqueos de seguridad que impiden el análisis automático. Intenta con otra URL.")
-                        
+                        st.warning("Es probable que la página tenga bloqueos de seguridad. Intenta con otra URL.")
                     else:
-                        # --- OTROS ERRORES ---
                         st.error(f"⚠️ Hubo un problema de conexión ({response.status_code}).")
 
                 except Exception as e:
