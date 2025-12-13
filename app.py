@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (VERSIÓN DEFINITIVA) ---
+# --- CSS DE ALTO IMPACTO (FIX TEXTO INVISIBLE) ---
 st.markdown("""
 <style>
     /* 1. FONDO GLOBAL */
@@ -35,18 +35,30 @@ st.markdown("""
     
     h3 { color: #E0E0E0 !important; font-weight: 600; }
 
-    /* 3. INPUTS Y SELECTS (ESTILO LIMPIO Y ESPACIOSO) */
+    /* 3. INPUTS Y SELECTS (CORRECCIÓN DE VISIBILIDAD) */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
         background-color: rgba(255, 255, 255, 0.08) !important;
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
-        padding: 16px !important;
+        padding: 12px 16px !important; /* Ajustado para que el texto no se escape */
         font-size: 1.1rem !important;
         line-height: 1.5 !important;
+        min-height: 50px !important;
     }
 
-    /* --- TÍTULOS DE INPUTS (LABELS) CON NEÓN --- */
+    /* --- FUERZA BRUTA PARA QUE EL TEXTO DEL SELECT SEA BLANCO --- */
+    .stSelectbox div[data-baseweb="select"] span {
+        color: white !important;
+        fill: white !important;
+        font-weight: 500;
+    }
+    
+    .stSelectbox div[data-baseweb="select"] * {
+        color: white !important; /* Asegura que cualquier elemento interno sea blanco */
+    }
+
+    /* TÍTULOS DE INPUTS (LABELS) CON NEÓN */
     .stTextInput label, .stSelectbox label {
         color: #FFFFFF !important; 
         font-weight: 800 !important; 
@@ -59,7 +71,6 @@ st.markdown("""
         text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
 
-    /* LA BARRA DE NEÓN LATERAL */
     .stTextInput label::before, .stSelectbox label::before {
         content: '';
         display: block;
@@ -71,13 +82,7 @@ st.markdown("""
         box-shadow: 0 0 12px rgba(255, 75, 75, 0.8);
     }
 
-    /* Ajuste texto Select */
-    .stSelectbox div[data-baseweb="select"] span {
-        color: white !important;
-        font-weight: 500;
-        font-size: 1.1rem !important;
-    }
-    
+    /* Menú desplegable */
     .stSelectbox div[data-baseweb="popover"] {
         background-color: #1E2130 !important;
         border: 1px solid #444 !important;
@@ -114,7 +119,7 @@ st.markdown("""
         box-shadow: 0 8px 30px rgba(255, 75, 75, 0.7);
     }
 
-    /* 5. TARJETAS DEL EQUIPO (CELESTITA CORREGIDO) */
+    /* 5. TARJETAS DEL EQUIPO */
     .team-card {
         background: rgba(0, 194, 255, 0.05);
         backdrop-filter: blur(10px);
@@ -129,18 +134,12 @@ st.markdown("""
         justify-content: center;
         align-items: center;
     }
-    
     .team-card:hover {
         transform: translateY(-5px);
         border-color: #00C2FF;
         box-shadow: 0 0 30px rgba(0, 194, 255, 0.2);
     }
-
-    /* Links dentro de la tarjeta */
-    .team-card a {
-        text-decoration: none !important;
-    }
-
+    .team-card a { text-decoration: none !important; }
     .team-card h4 {
         color: #00C2FF !important; 
         margin: 0 0 5px 0;
@@ -148,14 +147,11 @@ st.markdown("""
         font-size: 1.5rem;
         text-shadow: 0 0 10px rgba(0, 194, 255, 0.3);
     }
-    
     .team-card p {
         color: #A0C0D0;
         font-size: 0.95rem;
         margin: 0 0 25px 0;
     }
-
-    /* BOTÓN EMAIL */
     .email-btn {
         background-color: transparent;
         color: #00C2FF !important;
@@ -311,3 +307,4 @@ with col2:
 
 st.write("")
 st.write("")
+
