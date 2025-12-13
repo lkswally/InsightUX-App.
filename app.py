@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (MODO FINAL) ---
+# --- CSS DE ALTO IMPACTO (CORREGIDO) ---
 st.markdown("""
 <style>
     /* 1. FONDO GLOBAL */
@@ -21,15 +21,15 @@ st.markdown("""
         font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* 2. TÍTULO PRINCIPAL (GIGANTE) */
+    /* 2. TÍTULO PRINCIPAL */
     h1 {
         background: -webkit-linear-gradient(45deg, #FF4B4B, #FF914D);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: 900 !important;
-        font-size: 4rem !important; /* Aumentado */
+        font-size: 3.5rem !important;
         text-align: center;
-        padding-bottom: 15px;
+        padding-bottom: 20px;
         text-shadow: 0 0 30px rgba(255, 75, 75, 0.2);
     }
     
@@ -41,36 +41,36 @@ st.markdown("""
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
-        min-height: 55px !important;
-        font-size: 1.2rem !important;
+        min-height: 50px !important;
+        font-size: 1.1rem !important;
     }
 
-    /* --- TÍTULOS DE INPUTS (LABELS) CON BARRA NEÓN --- */
+    /* --- TÍTULOS DE INPUTS (LABELS) DESTACADOS --- */
     .stTextInput label, .stSelectbox label {
-        color: #FFFFFF !important; 
+        color: #FFFFFF !important; /* Blanco Puro */
         font-weight: 900 !important; /* Extra Negrita */
-        font-size: 1.4rem !important; /* AÚN MÁS GRANDE */
+        font-size: 1.5rem !important; /* MUY GRANDE */
         text-transform: uppercase;
         letter-spacing: 1.2px;
         margin-bottom: 15px !important;
         display: flex;
         align-items: center;
-        text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        text-shadow: 0 4px 10px rgba(0,0,0,0.8); /* Sombra fuerte para contraste */
     }
     
-    /* La barra lateral roja/naranja */
+    /* Barra lateral decorativa en los títulos */
     .stTextInput label::before, .stSelectbox label::before {
         content: '';
         display: inline-block;
-        width: 7px;
-        height: 24px;
+        width: 8px;
+        height: 28px;
         background: linear-gradient(180deg, #FF4B4B, #FF914D);
-        margin-right: 12px;
+        margin-right: 15px;
         border-radius: 4px;
-        box-shadow: 0 0 12px rgba(255, 75, 75, 0.8);
+        box-shadow: 0 0 15px rgba(255, 75, 75, 0.8);
     }
     
-    /* Dropdown y Texto */
+    /* Texto dentro del select */
     .stSelectbox div[data-baseweb="select"] span {
         color: white !important;
         font-weight: 500;
@@ -82,25 +82,25 @@ st.markdown("""
     }
     .stSelectbox svg { fill: #FF4B4B !important; }
 
-    /* Focus (Borde Rojo al escribir) */
+    /* Focus */
     .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus-within {
         border: 1px solid #FF4B4B !important;
         box-shadow: 0 0 20px rgba(255, 75, 75, 0.3);
     }
 
-    /* 4. BOTÓN DE ENVÍO (ROJO GRADIENTE) */
+    /* 4. BOTÓN DE ENVÍO (REPARADO) */
     div.stButton > button {
         width: 100%;
         background: linear-gradient(90deg, #FF4B4B 0%, #CC0000 100%);
         color: white;
         border: none;
-        padding: 20px 32px;
+        padding: 18px 32px;
         text-align: center;
         text-decoration: none;
         display: inline-block;
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 800;
-        margin-top: 25px;
+        margin-top: 30px;
         cursor: pointer;
         border-radius: 50px; 
         box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
@@ -111,74 +111,67 @@ st.markdown("""
         box-shadow: 0 8px 30px rgba(255, 75, 75, 0.7);
     }
 
-    /* 5. TARJETAS DEL EQUIPO (ESTILO CELESTITA / CYAN) */
+    /* 5. TARJETAS DEL EQUIPO (CELESTITA FIJO) */
     .team-card {
-        background: rgba(0, 194, 255, 0.03); /* Fondo azulado muy sutil */
+        background: rgba(0, 194, 255, 0.05);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 194, 255, 0.2); /* Borde Celestita */
+        border: 1px solid rgba(0, 194, 255, 0.3);
         border-radius: 16px;
-        padding: 25px;
+        padding: 20px; /* Reducido un poco para que entre bien */
         text-align: center;
         transition: all 0.3s ease;
-        height: 100%;
+        height: 220px; /* Altura fija para alineación perfecta */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
     }
     
     .team-card:hover {
         transform: translateY(-5px);
-        border-color: #00C2FF; /* Celestita Brillante */
-        box-shadow: 0 0 25px rgba(0, 194, 255, 0.2);
+        border-color: #00C2FF;
+        box-shadow: 0 0 30px rgba(0, 194, 255, 0.2);
     }
 
-    /* Contenedor Flex para alinear contenido */
-    .team-card-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        height: 100%;
-        min-height: 180px;
-    }
-
-    /* Zona Superior (LinkedIn) */
-    .linkedin-area {
-        text-decoration: none;
-        color: inherit;
-        display: block;
-        width: 100%;
-    }
-    .linkedin-area:hover h4 { color: #00C2FF; } /* Título se pone celeste */
-
+    /* Estilos de Texto dentro de la card */
     .team-card h4 {
-        color: white;
+        color: #00C2FF !important; /* SIEMPRE CELESTE */
         margin: 0 0 5px 0;
         font-weight: 800;
-        font-size: 1.4rem;
-        transition: color 0.3s;
-    }
-    .team-card p {
-        color: #A0C0D0; /* Gris azulado */
-        font-size: 0.95rem;
-        margin: 0;
+        font-size: 1.5rem;
+        text-shadow: 0 0 10px rgba(0, 194, 255, 0.3);
     }
     
-    /* BOTÓN EMAIL (ESTILO CELESTITA) */
+    .team-card p {
+        color: #A0C0D0;
+        font-size: 0.9rem;
+        margin: 0 0 20px 0;
+    }
+
+    /* Enlace LinkedIn (Invisible pero cubre el nombre) */
+    .linkedin-link {
+        text-decoration: none;
+        display: block;
+    }
+
+    /* BOTÓN EMAIL */
     .email-btn {
         background-color: transparent;
-        color: #00C2FF; /* Texto Celestita */
+        color: #00C2FF;
         text-decoration: none;
         font-weight: bold;
         font-size: 0.9rem;
-        border: 2px solid #00C2FF; /* Borde Celestita */
-        padding: 10px 25px;
+        border: 2px solid #00C2FF;
+        padding: 8px 20px;
         border-radius: 50px;
         transition: all 0.3s;
         display: inline-block;
-        margin-top: 20px;
     }
     .email-btn:hover {
         background-color: #00C2FF;
-        color: #0e1117; /* Texto oscuro al hacer hover */
-        box-shadow: 0 0 15px rgba(0, 194, 255, 0.6);
+        color: #0e1117;
+        box-shadow: 0 0 20px rgba(0, 194, 255, 0.6);
         font-weight: 900;
     }
 
@@ -272,7 +265,7 @@ with col_form:
                 except Exception as e:
                     st.error("❌ Error inesperado")
 
-# --- SECCIÓN EQUIPO (CELESTITA) ---
+# --- SECCIÓN EQUIPO (FINAL) ---
 st.write("")
 st.write("")
 st.markdown("---")
@@ -284,18 +277,13 @@ col1, col2 = st.columns(2)
 with col1:
     st.markdown("""
     <div class="team-card">
-        <div class="team-card-container">
-            <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank" class="linkedin-area">
-                <h4>Lucas Rojo</h4>
-                <p>Technical Automation Architect</p>
-            </a>
-            
-            <div>
-                <a href="mailto:lksrojo86@gmail.com" class="email-btn">
-                    📩 Escribime
-                </a>
-            </div>
-        </div>
+        <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank" class="linkedin-link">
+            <h4>Lucas Rojo</h4>
+            <p>Technical Automation Architect</p>
+        </a>
+        <a href="mailto:lksrojo86@gmail.com" class="email-btn">
+            📩 Escribime
+        </a>
     </div>
     """, unsafe_allow_html=True)
 
@@ -303,21 +291,17 @@ with col1:
 with col2:
     st.markdown("""
     <div class="team-card">
-        <div class="team-card-container">
-            <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" class="linkedin-area">
-                <h4>Antonella Calabro</h4>
-                <p>Senior UX Auditor</p>
-            </a>
-            
-            <div>
-                <a href="mailto:antonellacalabro@gmail.com" class="email-btn">
-                    📩 Escribime
-                </a>
-            </div>
-        </div>
+        <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" class="linkedin-link">
+            <h4>Antonella Calabro</h4>
+            <p>Senior UX Auditor</p>
+        </a>
+        <a href="mailto:antonellacalabro@gmail.com" class="email-btn">
+            📩 Escribime
+        </a>
     </div>
     """, unsafe_allow_html=True)
 
 st.write("")
 st.write("")
+
 
