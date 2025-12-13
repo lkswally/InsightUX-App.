@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (FIX TEXTO INVISIBLE) ---
+# --- CSS DE ALTO IMPACTO (CORREGIDO) ---
 st.markdown("""
 <style>
     /* 1. FONDO GLOBAL */
@@ -41,21 +41,22 @@ st.markdown("""
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
-        padding: 12px 16px !important; /* Ajustado para que el texto no se escape */
+        padding: 12px 16px !important;
         font-size: 1.1rem !important;
         line-height: 1.5 !important;
         min-height: 50px !important;
     }
 
-    /* --- FUERZA BRUTA PARA QUE EL TEXTO DEL SELECT SEA BLANCO --- */
+    /* --- SOLUCIÓN PARA EL TEXTO INVISIBLE DEL SELECT --- */
+    /* Fuerza el color blanco en el texto seleccionado */
     .stSelectbox div[data-baseweb="select"] span {
         color: white !important;
         fill: white !important;
         font-weight: 500;
     }
-    
+    /* Asegura que cualquier elemento interno sea blanco */
     .stSelectbox div[data-baseweb="select"] * {
-        color: white !important; /* Asegura que cualquier elemento interno sea blanco */
+        color: white !important; 
     }
 
     /* TÍTULOS DE INPUTS (LABELS) CON NEÓN */
@@ -82,7 +83,7 @@ st.markdown("""
         box-shadow: 0 0 12px rgba(255, 75, 75, 0.8);
     }
 
-    /* Menú desplegable */
+    /* Menú desplegable (Popover) */
     .stSelectbox div[data-baseweb="popover"] {
         background-color: #1E2130 !important;
         border: 1px solid #444 !important;
@@ -96,7 +97,7 @@ st.markdown("""
         background-color: rgba(255, 255, 255, 0.12) !important;
     }
 
-    /* 4. BOTÓN DE ENVÍO */
+    /* 4. BOTÓN DE ENVÍO (ANIMACIÓN RESTAURADA) */
     div.stButton > button {
         width: 100%;
         background: linear-gradient(90deg, #FF4B4B 0%, #CC0000 100%);
@@ -114,9 +115,10 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
         transition: transform 0.2s, box-shadow 0.2s;
     }
+    /* Efecto Hover corregido */
     div.stButton > button:hover {
         transform: translateY(-3px);
-        box-shadow: 8px 30px rgba(255, 75, 75, 0.7);
+        box-shadow: 0 8px 30px rgba(255, 75, 75, 0.7);
     }
 
     /* 5. TARJETAS DEL EQUIPO */
@@ -295,17 +297,6 @@ with col1:
 with col2:
     st.markdown("""
     <div class="team-card">
-        <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" style="text-decoration:none;">
-            <h4>Antonella Calabro</h4>
-            <p>Senior UX Auditor</p>
-        </a>
-        <a href="mailto:antonellacalabro@gmail.com" class="email-btn">
-            📩 Escribime
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
 
-st.write("")
-st.write("")
 
 
