@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (VERSIÓN ESTABLE) ---
+# --- CSS DE ALTO IMPACTO (NEÓN + ESTABILIDAD) ---
 st.markdown("""
 <style>
     /* 1. FONDO GLOBAL */
@@ -35,30 +35,44 @@ st.markdown("""
     
     h3 { color: #E0E0E0 !important; font-weight: 600; }
 
-    /* 3. INPUTS Y SELECTS (DISEÑO LIMPIO Y AMPLIO) */
+    /* 3. INPUTS Y SELECTS (ESTABLES Y LIMPIOS) */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
         background-color: rgba(255, 255, 255, 0.08) !important;
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 10px !important;
-        padding: 15px 15px !important; /* Aire interno natural */
-        font-size: 1.1rem !important;
+        border-radius: 12px !important;
+        padding: 16px !important; /* Relleno generoso pero seguro */
+        font-size: 1.15rem !important;
         line-height: 1.5 !important;
     }
 
-    /* --- TÍTULOS DE INPUTS (LABELS) --- */
+    /* --- TÍTULOS DE INPUTS (LABELS) CON NEÓN --- */
+    /* Aquí aplicamos el truco Flexbox para que la barra y el texto se alineen perfecto */
     .stTextInput label, .stSelectbox label {
         color: #FFFFFF !important; 
-        font-weight: 800 !important; /* Negrita Fuerte */
-        font-size: 1.4rem !important; /* Grande y legible */
+        font-weight: 800 !important; 
+        font-size: 1.3rem !important; 
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 10px !important;
-        display: block !important; /* Asegura que ocupe su propia línea */
-        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        letter-spacing: 1px;
+        margin-bottom: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
 
-    /* Ajuste para el texto dentro del Select */
+    /* LA BARRA DE NEÓN (Regresa triunfalmente) */
+    .stTextInput label::before, .stSelectbox label::before {
+        content: '';
+        display: block;
+        width: 6px;
+        height: 24px;
+        background: linear-gradient(180deg, #FF4B4B, #FF914D);
+        margin-right: 12px;
+        border-radius: 4px;
+        box-shadow: 0 0 12px rgba(255, 75, 75, 0.8);
+    }
+
+    /* Ajuste texto Select */
     .stSelectbox div[data-baseweb="select"] span {
         color: white !important;
         font-weight: 500;
@@ -71,10 +85,10 @@ st.markdown("""
     }
     .stSelectbox svg { fill: #FF4B4B !important; }
 
-    /* Focus (Efecto al hacer clic) */
+    /* Focus */
     .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus-within {
         border: 1px solid #FF4B4B !important;
-        box-shadow: 0 0 15px rgba(255, 75, 75, 0.3);
+        box-shadow: 0 0 20px rgba(255, 75, 75, 0.35);
         background-color: rgba(255, 255, 255, 0.12) !important;
     }
 
@@ -84,13 +98,13 @@ st.markdown("""
         background: linear-gradient(90deg, #FF4B4B 0%, #CC0000 100%);
         color: white;
         border: none;
-        padding: 18px 32px;
+        padding: 20px 32px;
         text-align: center;
         text-decoration: none;
         display: inline-block;
         font-size: 20px;
         font-weight: 800;
-        margin-top: 25px;
+        margin-top: 30px;
         cursor: pointer;
         border-radius: 50px; 
         box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
@@ -110,7 +124,7 @@ st.markdown("""
         padding: 25px;
         text-align: center;
         transition: all 0.3s ease;
-        height: 240px; /* Altura fija */
+        height: 240px; 
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -248,7 +262,7 @@ with col_form:
                 except Exception as e:
                     st.error("❌ Error inesperado")
 
-# --- SECCIÓN EQUIPO (CELESTITA) ---
+# --- SECCIÓN EQUIPO (FINAL) ---
 st.write("")
 st.write("")
 st.markdown("---")
@@ -286,5 +300,4 @@ with col2:
 
 st.write("")
 st.write("")
-
 
