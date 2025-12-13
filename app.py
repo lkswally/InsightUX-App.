@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (CORREGIDO) ---
+# --- CSS DE ALTO IMPACTO (CORREGIDO PARA EVITAR CORTES) ---
 st.markdown("""
 <style>
     /* 1. FONDO GLOBAL CON DEGRADADO */
@@ -37,33 +37,47 @@ st.markdown("""
         font-weight: 600;
     }
 
-    /* 3. INPUTS Y LABELS (CORRECCIÓN DE VISIBILIDAD) */
+    /* 3. INPUTS Y SELECTS (SOLUCIÓN AL TEXTO CORTADO) */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
-        background-color: rgba(255, 255, 255, 0.08) !important; /* Un poco más claro */
+        background-color: rgba(255, 255, 255, 0.08) !important;
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
-        padding: 8px !important; 
+        min-height: 45px !important; /* Altura mínima para que nada se corte */
+        align-items: center !important;
     }
-    
-    /* CORRECCIÓN: Labels ahora son blancos y legibles */
+
+    /* ESTILOS DE LOS TÍTULOS DE LOS INPUTS (LABELS) */
     .stTextInput label, .stSelectbox label {
-        color: #FFFFFF !important; /* Blanco puro */
-        font-weight: 600 !important; /* Más gordito */
-        font-size: 1rem !important;
-        margin-bottom: 5px !important;
+        color: #FFFFFF !important; /* Blanco Puro */
+        font-weight: 700 !important; /* Negrita Fuerte */
+        font-size: 1.1rem !important; /* Un poco más grande */
+        letter-spacing: 0.5px;
+        margin-bottom: 8px !important;
     }
     
-    /* Texto dentro del selectbox */
+    /* Texto dentro del selectbox seleccionado */
     .stSelectbox div[data-baseweb="select"] span {
         color: white !important;
         font-weight: 500;
+        font-size: 1rem !important;
+        white-space: normal !important; /* Permite que el texto baje si es largo */
+        line-height: 1.2 !important;
     }
     
-    /* Evitar que el texto del menú se corte */
+    /* Menú desplegable (Opciones) */
     .stSelectbox div[data-baseweb="popover"] {
-        width: auto !important;
-        min-width: 100% !important;
+        background-color: #1E2130 !important;
+        border: 1px solid #444 !important;
+    }
+    
+    /* Icono del dropdown */
+    .stSelectbox svg { fill: #FF4B4B !important; }
+
+    /* Efecto Focus */
+    .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus-within {
+        border: 1px solid #FF4B4B !important;
+        box-shadow: 0 0 15px rgba(255, 75, 75, 0.2);
     }
 
     /* 4. BOTÓN PRINCIPAL (NEÓN) */
@@ -78,7 +92,7 @@ st.markdown("""
         display: inline-block;
         font-size: 18px;
         font-weight: bold;
-        margin-top: 10px;
+        margin-top: 15px;
         cursor: pointer;
         border-radius: 50px; 
         box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
@@ -129,6 +143,7 @@ st.markdown("""
         color: white;
     }
 
+    /* Ocultar elementos de Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     .stDeployButton {display:none;}
@@ -139,13 +154,13 @@ st.markdown("""
 # 🔗 CONEXIÓN
 N8N_WEBHOOK_URL = "http://159.112.138.149:5678/webhook/test-lucas"
 
-# --- LÓGICA DE AUDIENCIAS (Texto Corto y Directo) ---
+# --- LÓGICA DE AUDIENCIAS (Texto Descriptivo) ---
 OPCIONES_AUDIENCIA = {
-    "🌎 General (Para todos)": "general",
-    "📸 Gen Z (Visual/Rápido)": "gen_z",
-    "💻 Millennials (UX/Social)": "millennials",
-    "📊 Gen X (Datos/Serio)": "gen_x",
-    "🛡️ Boomers (Seguridad)": "baby_boomers"
+    "🌎 Público General (Estándar)": "general",
+    "📸 Gen Z (Visual, Rápido y Móvil)": "gen_z",
+    "💻 Millennials (UX, Reseñas y Social)": "millennials",
+    "📊 Gen X (Datos Claros y Eficiencia)": "gen_x",
+    "🛡️ Boomers (Seguridad y Letra Grande)": "baby_boomers"
 }
 
 # --- UI PRINCIPAL ---
@@ -170,9 +185,9 @@ with col_form:
     
     st.write("")
     
-    # --- SELECTOR DE AUDIENCIA ---
+    # --- SELECTOR DE AUDIENCIA CORREGIDO ---
     audiencia_seleccionada = st.selectbox(
-        "🎯 ¿Cuál es tu cliente ideal?",
+        "👁️ Mira tu web con ojos de...",
         options=list(OPCIONES_AUDIENCIA.keys()),
         index=0 
     )
@@ -194,17 +209,17 @@ with col_form:
 
             # --- UX: SPINNER CON MENSAJES ALEATORIOS ---
             mensajes_carga = [
-                f"🧠 Analizando estructura para {audiencia_seleccionada}...",
-                "📡 Conectando con escáneres heurísticos...",
-                "🕵️‍♀️ Buscando reputación de marca en internet...",
-                "🎨 Evaluando contrastes y accesibilidad..."
+                f"🧠 Adoptando personalidad de: {audiencia_seleccionada.split('(')[0]}...",
+                "📡 Escaneando estructura y contenido...",
+                "🕵️‍♀️ Investigando reputación de marca...",
+                "🎨 Evaluando experiencia de usuario..."
             ]
             
             with st.spinner("Iniciando motores de IA..."):
                 try:
                     # Simulación de pasos para mejor UX
                     for msg in mensajes_carga:
-                        time.sleep(0.6)
+                        time.sleep(0.7)
                         
                     payload = {
                         "url": url_final, 
@@ -219,11 +234,10 @@ with col_form:
                         st.balloons()
                         st.success("✅ ¡Solicitud enviada con éxito!")
                         
-                        # Mensaje informativo sobre posibles bloqueos (Seguridad)
-                        st.info("""
-                        **📢 Importante:** Tu reporte está siendo generado y llegará a tu email en unos minutos.
+                        st.info(f"""
+                        **📢 Importante:** Tu reporte simulará la visión de un usuario **{audiencia_seleccionada.split(' ')[1]}**.
                         
-                        *Si no lo recibes en 10 minutos, es probable que el sitio web tenga bloqueos de seguridad anti-bot que impiden nuestra lectura.*
+                        Llegará a tu email en unos minutos. Si tarda más de 10 min, verifica tu carpeta de Spam.
                         """)
                         
                     else:
@@ -263,4 +277,3 @@ with col2:
 
 st.write("")
 st.write("")
-
