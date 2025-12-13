@@ -11,17 +11,17 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (MODIFICADO: TÍTULOS GIGANTES) ---
+# --- CSS DE ALTO IMPACTO (MODO ULTRA) ---
 st.markdown("""
 <style>
-    /* 1. FONDO GLOBAL CON DEGRADADO */
+    /* 1. FONDO GLOBAL */
     .stApp {
         background: rgb(14,17,23);
         background: linear-gradient(135deg, rgba(14,17,23,1) 0%, rgba(30,33,48,1) 100%);
         font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* 2. TÍTULO DEL ENCABEZADO */
+    /* 2. TÍTULO GIGANTE */
     h1 {
         background: -webkit-linear-gradient(45deg, #FF4B4B, #FF914D);
         -webkit-background-clip: text;
@@ -32,10 +32,7 @@ st.markdown("""
         padding-bottom: 10px;
     }
     
-    h3 {
-        color: #E0E0E0 !important;
-        font-weight: 600;
-    }
+    h3 { color: #E0E0E0 !important; font-weight: 600; }
 
     /* 3. INPUTS Y SELECTS */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
@@ -43,47 +40,58 @@ st.markdown("""
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
-        min-height: 50px !important; /* Más altos para que se vean mejor */
+        min-height: 50px !important;
         font-size: 1.1rem !important;
     }
 
-    /* --- AQUÍ ESTÁ EL CAMBIO QUE PEDISTE (LABELS) --- */
-    /* Títulos de los inputs: GIGANTES, BLANCOS Y NEGRITA */
+    /* --- TÍTULOS DE INPUTS DESTACADOS (NUEVO DISEÑO) --- */
     .stTextInput label, .stSelectbox label {
         color: #FFFFFF !important; 
         font-weight: 900 !important; /* Extra Negrita */
-        font-size: 1.35rem !important; /* Mucho más grande */
-        text-transform: uppercase; /* Opcional: Mayúsculas para más fuerza */
-        letter-spacing: 1px;
-        text-shadow: 0px 2px 4px rgba(0,0,0,0.6); /* Sombra para resaltar */
-        margin-bottom: 12px !important;
+        font-size: 1.2rem !important;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 15px !important;
+        
+        /* Decoración visual */
+        display: flex;
+        align-items: center;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
     
-    /* Texto dentro del selectbox seleccionado */
+    /* Agregamos una barrita de neón al lado del título */
+    .stTextInput label::before, .stSelectbox label::before {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 20px;
+        background: #FF4B4B;
+        margin-right: 10px;
+        border-radius: 4px;
+        box-shadow: 0 0 10px #FF4B4B;
+    }
+    
+    /* Texto dentro del select */
     .stSelectbox div[data-baseweb="select"] span {
         color: white !important;
         font-weight: 500;
         font-size: 1.1rem !important;
-        white-space: normal !important; 
-        line-height: 1.3 !important;
     }
     
-    /* Menú desplegable */
+    /* Dropdown menú */
     .stSelectbox div[data-baseweb="popover"] {
         background-color: #1E2130 !important;
         border: 1px solid #444 !important;
     }
-    
-    /* Icono del dropdown */
     .stSelectbox svg { fill: #FF4B4B !important; }
 
-    /* Efecto Focus */
+    /* Focus */
     .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus-within {
         border: 1px solid #FF4B4B !important;
         box-shadow: 0 0 20px rgba(255, 75, 75, 0.3);
     }
 
-    /* 4. BOTÓN PRINCIPAL (NEÓN) */
+    /* 4. BOTÓN DE ENVÍO */
     div.stButton > button {
         width: 100%;
         background: linear-gradient(90deg, #FF4B4B 0%, #CC0000 100%);
@@ -106,52 +114,65 @@ st.markdown("""
         box-shadow: 0 8px 30px rgba(255, 75, 75, 0.7);
     }
 
-    /* 5. TARJETAS DEL EQUIPO (LINKEDIN) */
+    /* 5. TARJETAS DEL EQUIPO (DUAL ACTION) */
     .team-card {
         background: rgba(255, 255, 255, 0.03);
         backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 16px;
         padding: 25px;
         text-align: center;
-        transition: transform 0.3s ease, border-color 0.3s ease;
+        transition: transform 0.3s ease;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     .team-card:hover {
-        transform: translateY(-8px);
-        border-color: #0077b5; /* Color LinkedIn al pasar mouse */
-        box-shadow: 0 10px 30px rgba(0, 119, 181, 0.2);
+        transform: translateY(-5px);
+        border-color: rgba(255, 75, 75, 0.3);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
+
+    /* Enlace a LinkedIn (Toda la parte superior) */
+    .linkedin-area {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        margin-bottom: 15px;
+    }
+    .linkedin-area:hover h4 { color: #0077b5; } /* Azul LinkedIn al pasar mouse */
+
     .team-card h4 {
         color: white;
         margin-bottom: 5px;
         font-weight: 800;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
+        transition: color 0.3s;
     }
     .team-card p {
         color: #AAA;
-        font-size: 0.9rem;
-        margin-bottom: 20px;
+        font-size: 0.95rem;
     }
     
-    /* BOTÓN LINKEDIN */
-    .linkedin-btn {
+    /* BOTÓN EMAIL */
+    .email-btn {
         background-color: transparent;
-        color: white;
+        color: #FF4B4B;
         text-decoration: none;
         font-weight: bold;
         font-size: 0.9rem;
-        border: 2px solid #0077b5; /* Azul LinkedIn */
-        padding: 8px 20px;
+        border: 2px solid #FF4B4B; 
+        padding: 10px 20px;
         border-radius: 50px;
         transition: all 0.3s;
         display: inline-block;
+        margin-top: auto; /* Empuja el botón al fondo */
     }
-    .linkedin-btn:hover {
-        background-color: #0077b5;
+    .email-btn:hover {
+        background-color: #FF4B4B;
         color: white;
-        box-shadow: 0 0 15px rgba(0, 119, 181, 0.6);
+        box-shadow: 0 0 15px rgba(255, 75, 75, 0.4);
     }
 
     #MainMenu {visibility: hidden;}
@@ -189,15 +210,12 @@ st.markdown("---")
 col_form, _ = st.columns([1, 0.01]) 
 
 with col_form:
-    # INPUT 1
     url_input = st.text_input("🔗 URL del sitio web", placeholder="ejemplo.com.ar")
     st.write("") 
     
-    # INPUT 2
     email_input = st.text_input("✉️ Tu correo electrónico", placeholder="tu@email.com")
     st.write("")
     
-    # INPUT 3 (SELECTOR)
     audiencia_seleccionada = st.selectbox(
         "👁️ Mira tu web con ojos de...",
         options=list(OPCIONES_AUDIENCIA.keys()),
@@ -207,7 +225,6 @@ with col_form:
     st.write("")
     st.write("")
     
-    # Botón de acción
     if st.button("🚀 INICIAR AUDITORÍA"):
         if not url_input or not email_input:
             st.warning("⚠️ Por favor completa todos los datos.")
@@ -218,7 +235,6 @@ with col_form:
 
             valor_generacion = OPCIONES_AUDIENCIA[audiencia_seleccionada]
 
-            # UX: SPINNER
             mensajes_carga = [
                 f"🧠 Adoptando personalidad de: {audiencia_seleccionada.split('(')[0]}...",
                 "📡 Escaneando estructura y contenido...",
@@ -242,21 +258,14 @@ with col_form:
                     if response.status_code == 200:
                         st.balloons()
                         st.success("✅ ¡Solicitud enviada con éxito!")
-                        
-                        st.info(f"""
-                        **📢 Importante:** Tu reporte simulará la visión de un usuario **{audiencia_seleccionada.split(' ')[1]}**.
-                        
-                        Llegará a tu email en unos minutos. Si tarda más de 10 min, verifica tu carpeta de Spam.
-                        """)
+                        st.info(f"**📢 Importante:** Tu reporte simulará la visión de un usuario **{audiencia_seleccionada.split(' ')[1]}**. Llegará a tu email en unos minutos.")
                     else:
                         st.error(f"⚠️ Hubo un problema de conexión ({response.status_code}).")
-                        st.markdown(f"El servidor no pudo procesar la solicitud. Intenta con otra URL o espera unos minutos.")
 
                 except Exception as e:
                     st.error("❌ Error inesperado")
-                    st.warning("Verifica tu conexión a internet o intenta más tarde.")
 
-# --- SECCIÓN EQUIPO (LINKS A LINKEDIN) ---
+# --- SECCIÓN EQUIPO ---
 st.write("")
 st.write("")
 st.markdown("---")
@@ -264,28 +273,34 @@ st.markdown("<h3 style='text-align: center; margin-bottom: 40px; font-size: 1.8r
 
 col1, col2 = st.columns(2)
 
-# --- ATENCIÓN LUCAS: REEMPLAZA LOS LINKS DE ABAJO POR LOS REALES ---
-
+# --- CARD LUCAS ---
 with col1:
     st.markdown("""
-    <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank" style="text-decoration: none;">
-        <div class="team-card">
+    <div class="team-card">
+        <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank" class="linkedin-area">
             <h4>Lucas Rojo</h4>
             <p>Technical Automation Architect</p>
-            <span class="linkedin-btn">Conectar en LinkedIn ➜</span>
-        </div>
-    </a>
+        </a>
+        
+        <a href="mailto:lksrojo86@gmail.com" class="email-btn">
+            📩 Escribime
+        </a>
+    </div>
     """, unsafe_allow_html=True)
 
+# --- CARD ANTONELLA ---
 with col2:
     st.markdown("""
-    <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" style="text-decoration: none;">
-        <div class="team-card">
+    <div class="team-card">
+        <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" class="linkedin-area">
             <h4>Antonella Calabro</h4>
             <p>Senior UX Auditor</p>
-            <span class="linkedin-btn">Conectar en LinkedIn ➜</span>
-        </div>
-    </a>
+        </a>
+        
+        <a href="mailto:antonellacalabro@gmail.com" class="email-btn">
+            📩 Escribime
+        </a>
+    </div>
     """, unsafe_allow_html=True)
 
 st.write("")
