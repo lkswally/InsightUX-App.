@@ -37,20 +37,26 @@ st.markdown("""
         font-weight: 600;
     }
 
-    /* 3. INPUTS MODERNOS (Cajas de texto) */
-    .stTextInput input {
+    /* 3. INPUTS MODERNOS (Cajas de texto y Select) */
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
         background-color: rgba(255, 255, 255, 0.05) !important;
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 12px !important;
-        padding: 15px !important;
-        transition: all 0.3s ease;
+        padding: 5px !important; /* Ajuste para alinear select y inputs */
     }
-    .stTextInput input:focus {
+    
+    /* Estilo específico para el texto dentro del selectbox */
+    .stSelectbox div[data-baseweb="select"] span {
+        color: white !important;
+    }
+
+    .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus-within {
         border: 1px solid #FF4B4B !important;
         box-shadow: 0 0 15px rgba(255, 75, 75, 0.2);
     }
-    .stTextInput label {
+    
+    .stTextInput label, .stSelectbox label {
         color: #BBBBBB !important;
         font-size: 0.9rem;
     }
@@ -143,14 +149,30 @@ st.markdown(
 st.markdown("---")
 
 # --- FORMULARIO ---
-# Usamos columnas para centrar un poco si la pantalla es muy ancha, 
-# pero en 'centered' layout ocupa el medio.
+# Usamos columnas para centrar un poco si la pantalla es muy ancha
 col_form, _ = st.columns([1, 0.01]) 
 
 with col_form:
     url_input = st.text_input("🔗 URL del sitio web", placeholder="ejemplo.com.ar")
     st.write("") # Espaciador
     email_input = st.text_input("✉️ Tu correo electrónico", placeholder="tu@email.com")
+    
+    st.write("")
+    
+    # --- NUEVO SELECTOR DE AUDIENCIA ---
+    # Esto envía valores simples ('millennials', etc) pero muestra texto descriptivo
+    generacion_input = st.selectbox(
+        "👥 ¿A quién le quieres vender? (Define la personalidad de la IA)",
+        options=["millennials", "baby_boomers", "gen_x", "gen_z"],
+        format_func=lambda x: {
+            "millennials": "Millennials (Experiencia y Social)",
+            "baby_boomers": "Baby Boomers (Seguridad y Claridad)",
+            "gen_x": "Generación X (Datos y Eficiencia)",
+            "gen_z": "Generación Z (Visual y Rapidez)"
+        }.get(x),
+        index=0 # Por defecto Millennials
+    )
+    # -----------------------------------
     
     st.write("")
     st.write("")
@@ -160,17 +182,23 @@ with col_form:
         if not url_input or not email_input:
             st.warning("⚠️ Faltan datos. Completá URL y Email para continuar.")
         else:
-            # Lógica de corrección
+            # Lógica de corrección de URL
             url_final = url_input.strip()
             if not url_final.startswith(("http://", "https://")):
                 url_final = "https://" + url_final
 
             # Animación Pro
-            with st.spinner(f"🧠 La IA está analizando {url_final}..."):
+            with st.spinner(f"🧠 La IA está analizando {url_final} para audiencia {generacion_input}..."):
                 try:
                     time.sleep(1.5) # Pequeño drama para que se vea el spinner
                     
-                    payload = {"url": url_final, "email": email_input}
+                    # AQUÍ ESTÁ LA CLAVE: Enviamos la nueva variable 'generacion'
+                    payload = {
+                        "url": url_final, 
+                        "email": email_input,
+                        "generacion": generacion_input
+                    }
+                    
                     response = requests.post(N8N_WEBHOOK_URL, json=payload)
 
                     if response.status_code == 200:
@@ -209,7 +237,6 @@ with col2:
 
 st.write("")
 st.write("")
-
 
 
 
