@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (MODO ULTRA) ---
+# --- CSS DE ALTO IMPACTO (MODO FINAL) ---
 st.markdown("""
 <style>
     /* 1. FONDO GLOBAL */
@@ -21,15 +21,16 @@ st.markdown("""
         font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* 2. TÍTULO GIGANTE */
+    /* 2. TÍTULO PRINCIPAL (GIGANTE) */
     h1 {
         background: -webkit-linear-gradient(45deg, #FF4B4B, #FF914D);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: 900 !important;
-        font-size: 3.5rem !important;
+        font-size: 4rem !important; /* Aumentado */
         text-align: center;
-        padding-bottom: 10px;
+        padding-bottom: 15px;
+        text-shadow: 0 0 30px rgba(255, 75, 75, 0.2);
     }
     
     h3 { color: #E0E0E0 !important; font-weight: 600; }
@@ -40,70 +41,66 @@ st.markdown("""
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
-        min-height: 50px !important;
-        font-size: 1.1rem !important;
+        min-height: 55px !important;
+        font-size: 1.2rem !important;
     }
 
-    /* --- TÍTULOS DE INPUTS DESTACADOS (NUEVO DISEÑO) --- */
+    /* --- TÍTULOS DE INPUTS (LABELS) CON BARRA NEÓN --- */
     .stTextInput label, .stSelectbox label {
         color: #FFFFFF !important; 
         font-weight: 900 !important; /* Extra Negrita */
-        font-size: 1.2rem !important;
+        font-size: 1.4rem !important; /* AÚN MÁS GRANDE */
         text-transform: uppercase;
-        letter-spacing: 1.5px;
+        letter-spacing: 1.2px;
         margin-bottom: 15px !important;
-        
-        /* Decoración visual */
         display: flex;
         align-items: center;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        text-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
     
-    /* Agregamos una barrita de neón al lado del título */
+    /* La barra lateral roja/naranja */
     .stTextInput label::before, .stSelectbox label::before {
         content: '';
         display: inline-block;
-        width: 6px;
-        height: 20px;
-        background: #FF4B4B;
-        margin-right: 10px;
+        width: 7px;
+        height: 24px;
+        background: linear-gradient(180deg, #FF4B4B, #FF914D);
+        margin-right: 12px;
         border-radius: 4px;
-        box-shadow: 0 0 10px #FF4B4B;
+        box-shadow: 0 0 12px rgba(255, 75, 75, 0.8);
     }
     
-    /* Texto dentro del select */
+    /* Dropdown y Texto */
     .stSelectbox div[data-baseweb="select"] span {
         color: white !important;
         font-weight: 500;
         font-size: 1.1rem !important;
     }
-    
-    /* Dropdown menú */
     .stSelectbox div[data-baseweb="popover"] {
         background-color: #1E2130 !important;
         border: 1px solid #444 !important;
     }
     .stSelectbox svg { fill: #FF4B4B !important; }
 
-    /* Focus */
+    /* Focus (Borde Rojo al escribir) */
     .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus-within {
         border: 1px solid #FF4B4B !important;
         box-shadow: 0 0 20px rgba(255, 75, 75, 0.3);
     }
 
-    /* 4. BOTÓN DE ENVÍO */
+    /* 4. BOTÓN DE ENVÍO (ROJO GRADIENTE) */
     div.stButton > button {
         width: 100%;
         background: linear-gradient(90deg, #FF4B4B 0%, #CC0000 100%);
         color: white;
         border: none;
-        padding: 18px 32px;
+        padding: 20px 32px;
         text-align: center;
         text-decoration: none;
         display: inline-block;
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 800;
-        margin-top: 20px;
+        margin-top: 25px;
         cursor: pointer;
         border-radius: 50px; 
         box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
@@ -114,65 +111,75 @@ st.markdown("""
         box-shadow: 0 8px 30px rgba(255, 75, 75, 0.7);
     }
 
-    /* 5. TARJETAS DEL EQUIPO (DUAL ACTION) */
+    /* 5. TARJETAS DEL EQUIPO (ESTILO CELESTITA / CYAN) */
     .team-card {
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(0, 194, 255, 0.03); /* Fondo azulado muy sutil */
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(0, 194, 255, 0.2); /* Borde Celestita */
         border-radius: 16px;
         padding: 25px;
         text-align: center;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
         height: 100%;
+    }
+    
+    .team-card:hover {
+        transform: translateY(-5px);
+        border-color: #00C2FF; /* Celestita Brillante */
+        box-shadow: 0 0 25px rgba(0, 194, 255, 0.2);
+    }
+
+    /* Contenedor Flex para alinear contenido */
+    .team-card-container {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-    }
-    .team-card:hover {
-        transform: translateY(-5px);
-        border-color: rgba(255, 75, 75, 0.3);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        align-items: center;
+        height: 100%;
+        min-height: 180px;
     }
 
-    /* Enlace a LinkedIn (Toda la parte superior) */
+    /* Zona Superior (LinkedIn) */
     .linkedin-area {
         text-decoration: none;
         color: inherit;
         display: block;
-        margin-bottom: 15px;
+        width: 100%;
     }
-    .linkedin-area:hover h4 { color: #0077b5; } /* Azul LinkedIn al pasar mouse */
+    .linkedin-area:hover h4 { color: #00C2FF; } /* Título se pone celeste */
 
     .team-card h4 {
         color: white;
-        margin-bottom: 5px;
+        margin: 0 0 5px 0;
         font-weight: 800;
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         transition: color 0.3s;
     }
     .team-card p {
-        color: #AAA;
+        color: #A0C0D0; /* Gris azulado */
         font-size: 0.95rem;
+        margin: 0;
     }
     
-    /* BOTÓN EMAIL */
+    /* BOTÓN EMAIL (ESTILO CELESTITA) */
     .email-btn {
         background-color: transparent;
-        color: #FF4B4B;
+        color: #00C2FF; /* Texto Celestita */
         text-decoration: none;
         font-weight: bold;
         font-size: 0.9rem;
-        border: 2px solid #FF4B4B; 
-        padding: 10px 20px;
+        border: 2px solid #00C2FF; /* Borde Celestita */
+        padding: 10px 25px;
         border-radius: 50px;
         transition: all 0.3s;
         display: inline-block;
-        margin-top: auto; /* Empuja el botón al fondo */
+        margin-top: 20px;
     }
     .email-btn:hover {
-        background-color: #FF4B4B;
-        color: white;
-        box-shadow: 0 0 15px rgba(255, 75, 75, 0.4);
+        background-color: #00C2FF;
+        color: #0e1117; /* Texto oscuro al hacer hover */
+        box-shadow: 0 0 15px rgba(0, 194, 255, 0.6);
+        font-weight: 900;
     }
 
     #MainMenu {visibility: hidden;}
@@ -265,11 +272,11 @@ with col_form:
                 except Exception as e:
                     st.error("❌ Error inesperado")
 
-# --- SECCIÓN EQUIPO ---
+# --- SECCIÓN EQUIPO (CELESTITA) ---
 st.write("")
 st.write("")
 st.markdown("---")
-st.markdown("<h3 style='text-align: center; margin-bottom: 40px; font-size: 1.8rem;'>Expertos detrás del Engine</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; margin-bottom: 40px; font-size: 1.8rem; color: #00C2FF !important;'>Expertos detrás del Engine</h3>", unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
@@ -277,14 +284,18 @@ col1, col2 = st.columns(2)
 with col1:
     st.markdown("""
     <div class="team-card">
-        <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank" class="linkedin-area">
-            <h4>Lucas Rojo</h4>
-            <p>Technical Automation Architect</p>
-        </a>
-        
-        <a href="mailto:lksrojo86@gmail.com" class="email-btn">
-            📩 Escribime
-        </a>
+        <div class="team-card-container">
+            <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank" class="linkedin-area">
+                <h4>Lucas Rojo</h4>
+                <p>Technical Automation Architect</p>
+            </a>
+            
+            <div>
+                <a href="mailto:lksrojo86@gmail.com" class="email-btn">
+                    📩 Escribime
+                </a>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -292,16 +303,21 @@ with col1:
 with col2:
     st.markdown("""
     <div class="team-card">
-        <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" class="linkedin-area">
-            <h4>Antonella Calabro</h4>
-            <p>Senior UX Auditor</p>
-        </a>
-        
-        <a href="mailto:antonellacalabro@gmail.com" class="email-btn">
-            📩 Escribime
-        </a>
+        <div class="team-card-container">
+            <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" class="linkedin-area">
+                <h4>Antonella Calabro</h4>
+                <p>Senior UX Auditor</p>
+            </a>
+            
+            <div>
+                <a href="mailto:antonellacalabro@gmail.com" class="email-btn">
+                    📩 Escribime
+                </a>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
 st.write("")
 st.write("")
+
