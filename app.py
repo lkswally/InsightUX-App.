@@ -297,6 +297,17 @@ with col1:
 with col2:
     st.markdown("""
     <div class="team-card">
+        <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" style="text-decoration:none;">
+            <h4>Antonella Calabro</h4>
+            <p>Senior UX Auditor</p>
+        </a>
+        <a href="mailto:antonellacalabro@gmail.com" class="email-btn">
+            📩 Escribime
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
 
+st.write("")
+st.write("")
 
 
