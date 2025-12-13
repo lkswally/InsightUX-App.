@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (UX MEJORADA) ---
+# --- CSS DE ALTO IMPACTO (VERSIÓN ESTABLE) ---
 st.markdown("""
 <style>
     /* 1. FONDO GLOBAL */
@@ -35,58 +35,34 @@ st.markdown("""
     
     h3 { color: #E0E0E0 !important; font-weight: 600; }
 
-    /* 3. INPUTS Y SELECTS (OPTIMIZACIÓN DE TEXTO) */
+    /* 3. INPUTS Y SELECTS (DISEÑO LIMPIO Y AMPLIO) */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
         background-color: rgba(255, 255, 255, 0.08) !important;
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 12px !important;
-        
-        /* AQUÍ ESTÁ LA MAGIA DEL CENTRADO */
-        height: 60px !important;          /* Altura fija cómoda */
-        padding-top: 0px !important;      /* Reset de padding */
-        padding-bottom: 0px !important;   /* Reset de padding */
-        padding-left: 20px !important;    /* Espacio a la izquierda */
-        
-        /* Texto interno */
-        font-size: 1.25rem !important;    /* Texto más grande y legible */
-        line-height: 60px !important;     /* Centrado vertical perfecto */
-        display: flex;
-        align-items: center;
+        border-radius: 10px !important;
+        padding: 15px 15px !important; /* Aire interno natural */
+        font-size: 1.1rem !important;
+        line-height: 1.5 !important;
     }
 
-    /* --- TÍTULOS DE INPUTS (LABELS) MÁS GRANDES --- */
+    /* --- TÍTULOS DE INPUTS (LABELS) --- */
     .stTextInput label, .stSelectbox label {
         color: #FFFFFF !important; 
-        font-weight: 900 !important; /* Extra Negrita */
-        font-size: 1.6rem !important; /* AUMENTADO */
+        font-weight: 800 !important; /* Negrita Fuerte */
+        font-size: 1.4rem !important; /* Grande y legible */
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 12px !important; /* Más aire entre título y caja */
-        display: flex;
-        align-items: center;
-        text-shadow: 0 4px 10px rgba(0,0,0,0.8);
+        letter-spacing: 0.5px;
+        margin-bottom: 10px !important;
+        display: block !important; /* Asegura que ocupe su propia línea */
+        text-shadow: 0 2px 5px rgba(0,0,0,0.5);
     }
-    
-    /* Barra lateral decorativa MÁS GRUESA */
-    .stTextInput label::before, .stSelectbox label::before {
-        content: '';
-        display: inline-block;
-        width: 10px;        /* Más gruesa */
-        height: 32px;       /* Más alta */
-        background: linear-gradient(180deg, #FF4B4B, #FF914D);
-        margin-right: 15px;
-        border-radius: 6px;
-        box-shadow: 0 0 15px rgba(255, 75, 75, 0.8);
-    }
-    
-    /* Ajuste para el texto dentro del Select (Dropdown) */
+
+    /* Ajuste para el texto dentro del Select */
     .stSelectbox div[data-baseweb="select"] span {
         color: white !important;
         font-weight: 500;
-        font-size: 1.2rem !important;
-        line-height: 1.5 !important;
-        align-self: center; /* Asegura centrado flex */
+        font-size: 1.1rem !important;
     }
     
     .stSelectbox div[data-baseweb="popover"] {
@@ -95,10 +71,10 @@ st.markdown("""
     }
     .stSelectbox svg { fill: #FF4B4B !important; }
 
-    /* Focus */
+    /* Focus (Efecto al hacer clic) */
     .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus-within {
         border: 1px solid #FF4B4B !important;
-        box-shadow: 0 0 25px rgba(255, 75, 75, 0.35);
+        box-shadow: 0 0 15px rgba(255, 75, 75, 0.3);
         background-color: rgba(255, 255, 255, 0.12) !important;
     }
 
@@ -108,38 +84,37 @@ st.markdown("""
         background: linear-gradient(90deg, #FF4B4B 0%, #CC0000 100%);
         color: white;
         border: none;
-        padding: 22px 32px;
+        padding: 18px 32px;
         text-align: center;
         text-decoration: none;
         display: inline-block;
-        font-size: 24px;
-        font-weight: 900;
-        margin-top: 35px;
+        font-size: 20px;
+        font-weight: 800;
+        margin-top: 25px;
         cursor: pointer;
         border-radius: 50px; 
-        box-shadow: 0 4px 20px rgba(255, 75, 75, 0.5);
+        box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
         transition: transform 0.2s, box-shadow 0.2s;
     }
     div.stButton > button:hover {
         transform: translateY(-3px);
-        box-shadow: 0 10px 40px rgba(255, 75, 75, 0.8);
+        box-shadow: 0 8px 30px rgba(255, 75, 75, 0.7);
     }
 
-    /* 5. TARJETAS DEL EQUIPO (CELESTITA REPARADO) */
+    /* 5. TARJETAS DEL EQUIPO (CELESTITA) */
     .team-card {
         background: rgba(0, 194, 255, 0.05);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(0, 194, 255, 0.3);
         border-radius: 16px;
-        padding: 20px;
+        padding: 25px;
         text-align: center;
         transition: all 0.3s ease;
-        height: 240px;
+        height: 240px; /* Altura fija */
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        position: relative;
     }
     
     .team-card:hover {
@@ -148,50 +123,39 @@ st.markdown("""
         box-shadow: 0 0 30px rgba(0, 194, 255, 0.2);
     }
 
-    /* TÍTULO NOMBRE (Cian) */
     .team-card h4 {
         color: #00C2FF !important; 
-        margin: 0 0 8px 0;
+        margin: 0 0 5px 0;
         font-weight: 800;
-        font-size: 1.6rem;
-        text-shadow: 0 0 15px rgba(0, 194, 255, 0.4);
+        font-size: 1.5rem;
+        text-shadow: 0 0 10px rgba(0, 194, 255, 0.3);
     }
     
     .team-card p {
         color: #A0C0D0;
-        font-size: 1rem;
+        font-size: 0.95rem;
         margin: 0 0 25px 0;
-        font-weight: 500;
     }
 
-    /* Enlace invisible para LinkedIn */
-    .linkedin-link {
-        text-decoration: none;
-        display: block;
-        margin-bottom: auto; /* Empuja hacia arriba */
-        margin-top: auto;
-    }
+    .linkedin-link { text-decoration: none; display: block; width: 100%; }
 
-    /* BOTÓN EMAIL */
     .email-btn {
         background-color: transparent;
         color: #00C2FF;
         text-decoration: none;
         font-weight: bold;
-        font-size: 1rem;
+        font-size: 0.9rem;
         border: 2px solid #00C2FF;
-        padding: 10px 25px;
+        padding: 8px 25px;
         border-radius: 50px;
         transition: all 0.3s;
         display: inline-block;
-        margin-bottom: 10px;
     }
     .email-btn:hover {
         background-color: #00C2FF;
         color: #0e1117;
-        box-shadow: 0 0 20px rgba(0, 194, 255, 0.8);
+        box-shadow: 0 0 15px rgba(0, 194, 255, 0.6);
         font-weight: 900;
-        transform: scale(1.05);
     }
 
     #MainMenu {visibility: hidden;}
@@ -220,7 +184,7 @@ st.write("")
 
 st.title("InsightUX Engine ⚡")
 st.markdown(
-    "<p style='text-align: center; color: #BBB; font-size: 1.3rem; margin-bottom: 40px;'>Auditoría de Landing Pages potenciada por Inteligencia Artificial.</p>", 
+    "<p style='text-align: center; color: #BBB; font-size: 1.2rem; margin-bottom: 40px;'>Auditoría de Landing Pages potenciada por Inteligencia Artificial.</p>", 
     unsafe_allow_html=True
 )
 st.markdown("---")
@@ -284,7 +248,7 @@ with col_form:
                 except Exception as e:
                     st.error("❌ Error inesperado")
 
-# --- SECCIÓN EQUIPO (FINAL) ---
+# --- SECCIÓN EQUIPO (CELESTITA) ---
 st.write("")
 st.write("")
 st.markdown("---")
