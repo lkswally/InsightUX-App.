@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS DE ALTO IMPACTO (NEÓN + ESTABILIDAD) ---
+# --- CSS DE ALTO IMPACTO (VERSIÓN DEFINITIVA) ---
 st.markdown("""
 <style>
     /* 1. FONDO GLOBAL */
@@ -35,19 +35,18 @@ st.markdown("""
     
     h3 { color: #E0E0E0 !important; font-weight: 600; }
 
-    /* 3. INPUTS Y SELECTS (ESTABLES Y LIMPIOS) */
+    /* 3. INPUTS Y SELECTS (ESTILO LIMPIO Y ESPACIOSO) */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
         background-color: rgba(255, 255, 255, 0.08) !important;
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
-        padding: 16px !important; /* Relleno generoso pero seguro */
-        font-size: 1.15rem !important;
+        padding: 16px !important;
+        font-size: 1.1rem !important;
         line-height: 1.5 !important;
     }
 
     /* --- TÍTULOS DE INPUTS (LABELS) CON NEÓN --- */
-    /* Aquí aplicamos el truco Flexbox para que la barra y el texto se alineen perfecto */
     .stTextInput label, .stSelectbox label {
         color: #FFFFFF !important; 
         font-weight: 800 !important; 
@@ -60,7 +59,7 @@ st.markdown("""
         text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
 
-    /* LA BARRA DE NEÓN (Regresa triunfalmente) */
+    /* LA BARRA DE NEÓN LATERAL */
     .stTextInput label::before, .stSelectbox label::before {
         content: '';
         display: block;
@@ -115,7 +114,7 @@ st.markdown("""
         box-shadow: 0 8px 30px rgba(255, 75, 75, 0.7);
     }
 
-    /* 5. TARJETAS DEL EQUIPO (CELESTITA) */
+    /* 5. TARJETAS DEL EQUIPO (CELESTITA CORREGIDO) */
     .team-card {
         background: rgba(0, 194, 255, 0.05);
         backdrop-filter: blur(10px);
@@ -124,7 +123,7 @@ st.markdown("""
         padding: 25px;
         text-align: center;
         transition: all 0.3s ease;
-        height: 240px; 
+        height: 250px; 
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -135,6 +134,11 @@ st.markdown("""
         transform: translateY(-5px);
         border-color: #00C2FF;
         box-shadow: 0 0 30px rgba(0, 194, 255, 0.2);
+    }
+
+    /* Links dentro de la tarjeta */
+    .team-card a {
+        text-decoration: none !important;
     }
 
     .team-card h4 {
@@ -151,11 +155,10 @@ st.markdown("""
         margin: 0 0 25px 0;
     }
 
-    .linkedin-link { text-decoration: none; display: block; width: 100%; }
-
+    /* BOTÓN EMAIL */
     .email-btn {
         background-color: transparent;
-        color: #00C2FF;
+        color: #00C2FF !important;
         text-decoration: none;
         font-weight: bold;
         font-size: 0.9rem;
@@ -167,7 +170,7 @@ st.markdown("""
     }
     .email-btn:hover {
         background-color: #00C2FF;
-        color: #0e1117;
+        color: #0e1117 !important;
         box-shadow: 0 0 15px rgba(0, 194, 255, 0.6);
         font-weight: 900;
     }
@@ -207,14 +210,14 @@ st.markdown("---")
 col_form, _ = st.columns([1, 0.01]) 
 
 with col_form:
-    url_input = st.text_input("🔗 URL del sitio web", placeholder="ejemplo.com.ar")
+    url_input = st.text_input("🔗 URL DEL SITIO WEB", placeholder="ejemplo.com.ar")
     st.write("") 
     
-    email_input = st.text_input("✉️ Tu correo electrónico", placeholder="tu@email.com")
+    email_input = st.text_input("✉️ TU CORREO ELECTRÓNICO", placeholder="tu@email.com")
     st.write("")
     
     audiencia_seleccionada = st.selectbox(
-        "👁️ Mira tu web con ojos de...",
+        "👁️ MIRA TU WEB CON OJOS DE...",
         options=list(OPCIONES_AUDIENCIA.keys()),
         index=0 
     )
@@ -253,14 +256,22 @@ with col_form:
                     response = requests.post(N8N_WEBHOOK_URL, json=payload)
 
                     if response.status_code == 200:
+                        # --- ÉXITO ---
                         st.balloons()
                         st.success("✅ ¡Solicitud enviada con éxito!")
                         st.info(f"**📢 Importante:** Tu reporte simulará la visión de un usuario **{audiencia_seleccionada.split(' ')[1]}**. Llegará a tu email en unos minutos.")
+                        
+                    elif response.status_code == 400:
+                        # --- ERROR DE LECTURA (ANTI-BOT) ---
+                        st.error("🛡️ No pudimos leer este sitio web.")
+                        st.warning("Es probable que la página tenga bloqueos de seguridad que impiden el análisis automático. Intenta con otra URL.")
+                        
                     else:
+                        # --- OTROS ERRORES ---
                         st.error(f"⚠️ Hubo un problema de conexión ({response.status_code}).")
 
                 except Exception as e:
-                    st.error("❌ Error inesperado")
+                    st.error(f"❌ Error inesperado: {e}")
 
 # --- SECCIÓN EQUIPO (FINAL) ---
 st.write("")
@@ -274,7 +285,7 @@ col1, col2 = st.columns(2)
 with col1:
     st.markdown("""
     <div class="team-card">
-        <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank" class="linkedin-link">
+        <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank" style="text-decoration:none;">
             <h4>Lucas Rojo</h4>
             <p>Technical Automation Architect</p>
         </a>
@@ -288,7 +299,7 @@ with col1:
 with col2:
     st.markdown("""
     <div class="team-card">
-        <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" class="linkedin-link">
+        <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" style="text-decoration:none;">
             <h4>Antonella Calabro</h4>
             <p>Senior UX Auditor</p>
         </a>
@@ -300,4 +311,3 @@ with col2:
 
 st.write("")
 st.write("")
-
