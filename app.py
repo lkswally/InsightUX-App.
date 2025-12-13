@@ -116,7 +116,7 @@ st.markdown("""
     }
     div.stButton > button:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 30px rgba(255, 75, 75, 0.7);
+        box-shadow: 8px 30px rgba(255, 75, 75, 0.7);
     }
 
     /* 5. TARJETAS DEL EQUIPO */
@@ -307,4 +307,5 @@ with col2:
 
 st.write("")
 st.write("")
+
 
