@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS REPARADO (VISIBILIDAD Y DISEÑO) ---
+# --- CSS ---
 st.markdown("""
 <style>
     .stApp {
@@ -30,7 +30,10 @@ st.markdown("""
         text-shadow: 0 0 30px rgba(255, 75, 75, 0.2);
     }
 
-    h3 { color: #E0E0E0 !important; font-weight: 600; }
+    h3 {
+        color: #E0E0E0 !important;
+        font-weight: 600;
+    }
 
     .stTextInput input {
         background-color: rgba(255, 255, 255, 0.08) !important;
@@ -47,7 +50,8 @@ st.markdown("""
         color: white !important;
     }
 
-    div[data-baseweb="select"] span, div[data-baseweb="select"] div {
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] div {
         color: white !important;
         -webkit-text-fill-color: white !important;
     }
@@ -61,7 +65,8 @@ st.markdown("""
         color: white !important;
     }
 
-    .stTextInput label, .stSelectbox label {
+    .stTextInput label,
+    .stSelectbox label {
         color: #FFFFFF !important;
         font-weight: 800 !important;
         font-size: 1.3rem !important;
@@ -73,7 +78,8 @@ st.markdown("""
         text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
 
-    .stTextInput label::before, .stSelectbox label::before {
+    .stTextInput label::before,
+    .stSelectbox label::before {
         content: '';
         display: block;
         width: 6px;
@@ -108,20 +114,25 @@ st.markdown("""
         color: #fff !important;
     }
 
+    .team-wrapper {
+        max-width: 430px;
+        margin: 0 auto;
+    }
+
     .team-card {
         background: rgba(0, 194, 255, 0.05);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(0, 194, 255, 0.3);
         border-radius: 16px;
-        padding: 25px;
+        padding: 28px;
         text-align: center;
         transition: all 0.3s ease;
-        height: 250px;
+        min-height: 230px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-    }
+   }
 
     .team-card:hover {
         transform: translateY(-5px);
@@ -129,7 +140,9 @@ st.markdown("""
         box-shadow: 0 0 30px rgba(0, 194, 255, 0.2);
     }
 
-    .team-card a { text-decoration: none !important; }
+    .team-card a {
+        text-decoration: none !important;
+    }
 
     .team-card h4 {
         color: #00C2FF !important;
@@ -171,9 +184,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 🔗 CONEXIÓN
-# En producción se lee desde Streamlit Secrets.
-# En local, usa la URL productiva como fallback.
+# --- CONEXIÓN ---
+# En Streamlit Cloud, configurar en Manage app → Settings → Secrets:
+# N8N_WEBHOOK_URL = "http://159.112.138.149:5678/webhook/insightux-audit"
 N8N_WEBHOOK_URL = st.secrets.get(
     "N8N_WEBHOOK_URL",
     "http://159.112.138.149:5678/webhook/insightux-audit"
@@ -240,7 +253,7 @@ with col_main:
             mensajes_carga = [
                 f"🧠 Adoptando personalidad de: {audiencia_seleccionada.split('(')[0]}...",
                 "📡 Escaneando estructura y contenido...",
-                "🕵️‍♀️ Investigando reputación de marca...",
+                "🕵️‍♀️ Investigando huella digital pública...",
                 "📚 Comparando contra heurísticas UX/CRO...",
                 "🎨 Preparando el informe..."
             ]
@@ -275,11 +288,21 @@ with col_main:
 
                     elif response.status_code == 400:
                         st.error("🛡️ No pudimos leer este sitio web.")
-                        st.warning("Es probable que la página tenga bloqueos de seguridad o no devuelva contenido suficiente. Probá con otra URL.")
+                        try:
+                            data = response.json()
+                            mensaje = data.get(
+                                "message",
+                                "Puede que la página tenga bloqueos anti-bot, requiera JavaScript o no devuelva contenido suficiente."
+                            )
+                        except Exception:
+                            mensaje = "Puede que la página tenga bloqueos anti-bot, requiera JavaScript o no devuelva contenido suficiente."
+
+                        st.warning(mensaje)
+                        st.info("Probá con una URL pública, real y accesible. Ejemplo: https://saldo.com.ar")
 
                     elif response.status_code in [502, 503, 504]:
                         st.error("⚠️ El motor de análisis está temporalmente saturado.")
-                        st.warning("Probá nuevamente en unos minutos. El flujo está activo, pero Gemini o algún servicio intermedio puede estar con alta demanda.")
+                        st.warning("Probá nuevamente en unos minutos. Puede haber alta demanda en Gemini o en algún servicio intermedio.")
 
                     else:
                         detalle = response.text[:500] if response.text else "Sin detalle disponible."
@@ -288,7 +311,7 @@ with col_main:
 
                 except requests.exceptions.Timeout:
                     st.error("⏳ El análisis tardó más de lo esperado.")
-                    st.warning("Puede que el workflow siga procesando en segundo plano. Revisá tu correo o intentá nuevamente en unos minutos.")
+                    st.warning("Puede que el workflow siga procesando. Revisá tu correo o intentá nuevamente en unos minutos.")
 
                 except requests.exceptions.ConnectionError:
                     st.error("❌ No se pudo conectar con el backend de auditoría.")
@@ -302,14 +325,12 @@ st.write("")
 st.write("")
 st.markdown("---")
 st.markdown(
-    "<h3 style='text-align: center; margin-bottom: 50px; font-size: 2rem; color: #00C2FF !important; text-shadow: 0 0 20px rgba(0,194,255,0.3);'>Expertos detrás del Engine</h3>",
+    "<h3 style='text-align: center; margin-bottom: 50px; font-size: 2rem; color: #00C2FF !important; text-shadow: 0 0 20px rgba(0,194,255,0.3);'>Experto detrás del Engine</h3>",
     unsafe_allow_html=True
 )
 
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown("""
+st.markdown("""
+<div class="team-wrapper">
     <div class="team-card">
         <a href="https://www.linkedin.com/in/lucas-rojo-54446214b/" target="_blank" style="text-decoration:none;">
             <h4>Lucas Rojo</h4>
@@ -319,20 +340,8 @@ with col1:
             📩 Escribime
         </a>
     </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-    st.markdown("""
-    <div class="team-card">
-        <a href="https://www.linkedin.com/in/antonella-calabro/" target="_blank" style="text-decoration:none;">
-            <h4>Antonella Calabro</h4>
-            <p>Senior UX Auditor</p>
-        </a>
-        <a href="mailto:antonellacalabro@gmail.com" class="email-btn">
-            📩 Escribime
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
 st.write("")
 st.write("")
