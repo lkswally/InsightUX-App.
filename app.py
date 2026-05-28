@@ -35,12 +35,41 @@ st.markdown("""
         font-weight: 600;
     }
 
+    /* INPUTS - texto visible */
     .stTextInput input {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-        color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        background-color: #f8fafc !important;
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+        border: 1px solid rgba(255, 255, 255, 0.35) !important;
         border-radius: 12px !important;
         padding: 12px 16px !important;
+        font-weight: 600 !important;
+        caret-color: #111827 !important;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .stTextInput input::placeholder {
+        color: #64748b !important;
+        -webkit-text-fill-color: #64748b !important;
+        opacity: 1 !important;
+        font-weight: 500 !important;
+    }
+
+    .stTextInput input:focus {
+        border-color: #FF914D !important;
+        box-shadow: 0 0 0 3px rgba(255, 145, 77, 0.25), 0 0 18px rgba(255, 75, 75, 0.20) !important;
+        outline: none !important;
+    }
+
+    /* Chrome autofill */
+    .stTextInput input:-webkit-autofill,
+    .stTextInput input:-webkit-autofill:hover,
+    .stTextInput input:-webkit-autofill:focus,
+    .stTextInput input:-webkit-autofill:active {
+        -webkit-text-fill-color: #111827 !important;
+        box-shadow: 0 0 0px 1000px #f8fafc inset !important;
+        transition: background-color 9999s ease-in-out 0s;
+        caret-color: #111827 !important;
     }
 
     div[data-baseweb="select"] > div {
@@ -69,7 +98,7 @@ st.markdown("""
     .stSelectbox label {
         color: #FFFFFF !important;
         font-weight: 800 !important;
-        font-size: 1.3rem !important;
+        font-size: 1.05rem !important;
         text-transform: uppercase;
         letter-spacing: 1px;
         margin-bottom: 12px !important;
@@ -185,8 +214,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- CONEXIÓN ---
-# En Streamlit Cloud, configurar en Manage app → Settings → Secrets:
-# N8N_WEBHOOK_URL = "http://159.112.138.149:5678/webhook/insightux-audit"
 N8N_WEBHOOK_URL = st.secrets.get(
     "N8N_WEBHOOK_URL",
     "http://159.112.138.149:5678/webhook/insightux-audit"
@@ -200,6 +227,20 @@ OPCIONES_AUDIENCIA = {
     "📊 Gen X (Datos Claros y Eficiencia)": "gen_x",
     "🛡️ Boomers (Seguridad y Letra Grande)": "baby_boomers"
 }
+
+def normalizar_url_visible(url: str) -> str:
+    url = url.strip()
+    url = url.replace("https://", "").replace("http://", "")
+    url = url.rstrip("/")
+    return url
+
+def normalizar_url_tecnica(url: str) -> str:
+    url_visible = normalizar_url_visible(url)
+    return f"https://{url_visible}"
+
+def email_valido(email: str) -> bool:
+    email = email.strip()
+    return "@" in email and "." in email.split("@")[-1]
 
 # --- UI PRINCIPAL ---
 st.write("")
@@ -215,10 +256,16 @@ st.markdown("---")
 _, col_main, _ = st.columns([0.1, 0.8, 0.1])
 
 with col_main:
-    url_input = st.text_input("🔗 URL DEL SITIO WEB", placeholder="ejemplo.com.ar")
+    url_input = st.text_input(
+        "🔗 URL DEL SITIO WEB",
+        placeholder="bookhap.com"
+    )
     st.write("")
 
-    email_input = st.text_input("✉️ TU CORREO ELECTRÓNICO", placeholder="tu@email.com")
+    email_input = st.text_input(
+        "✉️ TU CORREO ELECTRÓNICO",
+        placeholder="tu@email.com"
+    )
     st.write("")
 
     audiencia_seleccionada = st.selectbox(
@@ -239,15 +286,14 @@ with col_main:
 
     if boton_submit:
         if not url_input or not email_input:
-            st.warning("⚠️ Por favor completa todos los datos.")
-        elif "@" not in email_input or "." not in email_input:
+            st.warning("⚠️ Por favor completá todos los datos.")
+        elif not email_valido(email_input):
             st.warning("⚠️ Revisá el correo electrónico ingresado.")
         else:
-            url_final = url_input.strip()
+            url_visible = normalizar_url_visible(url_input)
+            url_final = normalizar_url_tecnica(url_input)
 
-            if not url_final.startswith(("http://", "https://")):
-                url_final = "https://" + url_final
-
+            email_final = email_input.strip()
             valor_generacion = OPCIONES_AUDIENCIA[audiencia_seleccionada]
 
             mensajes_carga = [
@@ -258,7 +304,7 @@ with col_main:
                 "🎨 Preparando el informe..."
             ]
 
-            with st.spinner("Iniciando motores de IA..."):
+            with st.spinner("Iniciando motores de auditoría..."):
                 try:
                     for msg in mensajes_carga:
                         st.info(msg)
@@ -266,7 +312,8 @@ with col_main:
 
                     payload = {
                         "url": url_final,
-                        "email": email_input.strip(),
+                        "display_url": url_visible,
+                        "email": email_final,
                         "generacion": valor_generacion
                     }
 
@@ -276,33 +323,57 @@ with col_main:
                         timeout=180
                     )
 
+                    response_data = {}
+                    try:
+                        response_data = response.json()
+                    except Exception:
+                        response_data = {}
+
                     if response.status_code == 200:
-                        st.balloons()
-                        st.markdown(f"""
-                        <div style="background-color: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #dcfce7; padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px;">
-                            <h3 style="margin:0; color: #22c55e !important;">✅ Auditoría enviada con éxito</h3>
-                            <p style="margin-top: 10px; font-size: 1.1rem;">El análisis se generó con foco en <strong>{audiencia_seleccionada}</strong>.</p>
-                            <p style="font-size: 0.9rem; opacity: 0.8;">Revisá tu email en unos minutos.</p>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        # Doble control: n8n puede responder 200 aunque haya fallado el email.
+                        if response_data and response_data.get("ok") is False:
+                            mensaje = response_data.get(
+                                "message",
+                                "La auditoría se generó, pero no se pudo enviar el correo."
+                            )
+                            error = response_data.get("error", "")
+
+                            st.error("⚠️ La auditoría no pudo enviarse por correo.")
+                            st.warning(mensaje)
+
+                            if error:
+                                st.code(str(error))
+
+                        else:
+                            destino = (
+                                response_data.get("to")
+                                or response_data.get("email")
+                                or email_final
+                            )
+
+                            st.balloons()
+                            st.markdown(f"""
+                            <div style="background-color: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #dcfce7; padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px;">
+                                <h3 style="margin:0; color: #22c55e !important;">✅ Auditoría enviada con éxito</h3>
+                                <p style="margin-top: 10px; font-size: 1.1rem;">El análisis se generó con foco en <strong>{audiencia_seleccionada}</strong>.</p>
+                                <p style="font-size: 0.95rem; opacity: 0.9;">Sitio analizado: <strong>{url_visible}</strong></p>
+                                <p style="font-size: 0.95rem; opacity: 0.9;">Enviado a: <strong>{destino}</strong></p>
+                                <p style="font-size: 0.85rem; opacity: 0.75;">Revisá también spam, promociones o correo no deseado.</p>
+                            </div>
+                            """, unsafe_allow_html=True)
 
                     elif response.status_code == 400:
                         st.error("🛡️ No pudimos leer este sitio web.")
-                        try:
-                            data = response.json()
-                            mensaje = data.get(
-                                "message",
-                                "Puede que la página tenga bloqueos anti-bot, requiera JavaScript o no devuelva contenido suficiente."
-                            )
-                        except Exception:
-                            mensaje = "Puede que la página tenga bloqueos anti-bot, requiera JavaScript o no devuelva contenido suficiente."
-
+                        mensaje = response_data.get(
+                            "message",
+                            "Puede que la página tenga bloqueos anti-bot, requiera JavaScript o no devuelva contenido suficiente."
+                        )
                         st.warning(mensaje)
-                        st.info("Probá con una URL pública, real y accesible. Ejemplo: https://saldo.com.ar")
+                        st.info("Probá con una URL pública, real y accesible. Ejemplo: saldoar.com")
 
                     elif response.status_code in [502, 503, 504]:
                         st.error("⚠️ El motor de análisis está temporalmente saturado.")
-                        st.warning("Probá nuevamente en unos minutos. Puede haber alta demanda en Gemini o en algún servicio intermedio.")
+                        st.warning("Probá nuevamente en unos minutos. Puede haber alta demanda o algún servicio intermedio caído.")
 
                     else:
                         detalle = response.text[:500] if response.text else "Sin detalle disponible."
